@@ -80,7 +80,9 @@ nav ul {
   padding: 0;
 }
 nav ul li {
-  padding: 1.5rem;
+  width: 4.2rem;
+  padding: 1rem 0;
+  box-sizing: border-box;
   color: var(--color-header);
   font-weight: bold;
   cursor: pointer;
@@ -88,6 +90,16 @@ nav ul li {
   transition: background var(--transition), transform var(--transition);
   border-bottom: 1px solid transparent;
   border-image: linear-gradient(to right, var(--color-white), var(--color-border)) 1;
+}
+nav ul li .nav-label {
+  display: block;
+  font-size: 0.65rem;
+  color: var(--color-header);
+  transition: color var(--transition);
+  text-transform: uppercase;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 nav ul li:last-child {
   border-bottom: none;
@@ -97,7 +109,10 @@ nav ul li.active {
   color: var(--color-primary);
   background-color: rgba(var(--color-primary-rgb), 0.2);
 }
-nav ul li:hover {
+nav ul li:hover, nav ul li:hover .nav-label {
+  color: var(--color-primary);
+}
+nav ul li.active .nav-label {
   color: var(--color-primary);
 }
 
@@ -461,7 +476,7 @@ h2 {
     height: 100%;
   }
   aside {
-    margin: 75px 0 20px;
+    margin: 74px 0 20px;
     border-radius: var(--radius);
     box-shadow: unset;
   }
