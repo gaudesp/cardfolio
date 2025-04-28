@@ -278,7 +278,7 @@ ul.label {
 ul.label li {
   display: flex;
   justify-content: space-between;
-  padding: 10px 0;
+  padding: 9px 0;
 }
 .text-right {
   text-align: right;
