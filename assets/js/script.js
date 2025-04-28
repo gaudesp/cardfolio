@@ -3,6 +3,7 @@ $(function() {
   var $sections = $('article section');
   var $article = $('article');
   var currentTab = null;
+  var isAnimating = false;
   function isDesktop() {
     return window.innerWidth > 1100;
   }
@@ -12,23 +13,31 @@ $(function() {
     $target.show().addClass('active');
   }
   function activateTab(tab) {
-    if (!tab) return;
+    if (!tab || isAnimating) return;
+    isAnimating = true;
     var $targetNav = $navItems.filter('[data-tab="' + tab + '"]');
-    if (!$targetNav.length) return;
+    if (!$targetNav.length) {
+      isAnimating = false;
+      return;
+    }
     $navItems.removeClass('active');
     $targetNav.addClass('active');
     if (isDesktop()) {
       $article.one('transitionend', function() {
         showSection(tab);
-        $article.removeClass('slide-out').addClass('slide-in');
-        $article.one('transitionend', function() {
-          $article.removeClass('slide-in');
-        });
+        $article
+          .removeClass('slide-out')
+          .addClass('slide-in')
+          .one('transitionend', function() {
+            $article.removeClass('slide-in');
+            isAnimating = false;
+          });
       });
       $article[0].offsetWidth;
       $article.addClass('slide-out');
     } else {
       showSection(tab);
+      isAnimating = false;
     }
     window.location.hash = tab;
     $('html, body').scrollTop(0);
