@@ -134,7 +134,7 @@ aside {
 }
 aside .profile-pic {
   flex: 1;
-  background-image: url('../img/profile.jpg');
+  background-image: url('../img/profile.png');
   background-size: cover;
   background-position: center;
   border-radius: var(--radius) var(--radius) 0 0;
