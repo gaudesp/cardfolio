@@ -1,29 +1,64 @@
 $(function() {
   var $navItems = $('nav ul li');
   var $sections = $('article section');
+  var $article = $('article');
+  var currentTab = null;
+  function isDesktop() {
+    return window.innerWidth > 1100;
+  }
+  function showSection(tab) {
+    $sections.removeClass('active').hide();
+    var $target = $('#' + tab);
+    $target.show().addClass('active');
+  }
   function activateTab(tab) {
     if (!tab) return;
-    var $targetSection = $('#' + tab);
-    var $targetNavItem = $navItems.filter('[data-tab="' + tab + '"]');
-    if ($targetSection.length && $targetNavItem.length) {
-      $navItems.removeClass('active');
-      $targetNavItem.addClass('active');
-      $sections.removeClass('active');
-      $targetSection.addClass('active');
-      window.location.hash = tab;
-      $('html, body').scrollTop(0);
+    var $targetNav = $navItems.filter('[data-tab="' + tab + '"]');
+    if (!$targetNav.length) return;
+    $navItems.removeClass('active');
+    $targetNav.addClass('active');
+    if (isDesktop()) {
+      $article.one('transitionend', function() {
+        showSection(tab);
+        $article.removeClass('slide-out').addClass('slide-in');
+        $article.one('transitionend', function() {
+          $article.removeClass('slide-in');
+        });
+      });
+      $article[0].offsetWidth;
+      $article.addClass('slide-out');
+    } else {
+      showSection(tab);
     }
+    window.location.hash = tab;
+    $('html, body').scrollTop(0);
+    currentTab = tab;
   }
+  var initial = window.location.hash.replace('#', '') || $navItems.first().data('tab');
+  currentTab = initial;
+  showSection(initial);
+  $navItems.removeClass('active');
+  $navItems.filter('[data-tab="' + initial + '"]').addClass('active');
   $navItems.on('click', function() {
     var tab = $(this).data('tab');
-    activateTab(tab);
+    if (tab !== currentTab) activateTab(tab);
   });
-  var initialHash = window.location.hash.replace('#', '');
-  if (initialHash) {
-    activateTab(initialHash);
-  } else {
-    var defaultTab = $navItems.first().data('tab');
-    activateTab(defaultTab);
-  }
+  var lastDesktop = isDesktop();
+  $(window).on('resize', function() {
+    var nowDesktop = isDesktop();
+    if (nowDesktop !== lastDesktop) {
+      $('body').removeClass('js-ready');
+      $article.removeClass('slide-out slide-in');
+      showSection(currentTab);
+      $('body').addClass('js-ready');
+      lastDesktop = nowDesktop;
+    }
+  });
   $('body').addClass('js-ready');
+  if (isDesktop()) {
+    $article.addClass('slide-in');
+    $article.one('transitionend', function() {
+      $article.removeClass('slide-in');
+    });
+  }
 });
