@@ -11,6 +11,7 @@ $(function() {
     $sections.removeClass('active').hide();
     var $target = $('#' + tab);
     $target.show().addClass('active');
+    $article.scrollTop(0);
   }
   function activateTab(tab) {
     if (!tab || isAnimating) return;
