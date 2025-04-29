@@ -11,7 +11,7 @@ $(function() {
     $sections.removeClass('active').hide();
     var $target = $('#' + tab);
     $target.show().addClass('active');
-    $article.scrollTop(0);
+    if (isDesktop()) $article.scrollTop(0);
   }
   function activateTab(tab) {
     if (!tab || isAnimating) return;
@@ -41,7 +41,7 @@ $(function() {
       isAnimating = false;
     }
     window.location.hash = tab;
-    $('html, body').scrollTop(0);
+    if (isDesktop()) $('html, body').scrollTop(0);
     currentTab = tab;
   }
   var initial = window.location.hash.replace('#', '') || $navItems.first().data('tab');
