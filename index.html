@@ -21,6 +21,10 @@
           <i class="fa-solid fa-newspaper"></i>
           <span class="nav-label">cv</span>
         </li>
+        <li data-tab="skills">
+          <i class="fa-solid fa-tools"></i>
+          <span class="nav-label">skills</span>
+        </li>
         <li data-tab="projects">
           <i class="fa-solid fa-folder-open"></i>
           <span class="nav-label">projets</span>
@@ -50,7 +54,7 @@
       <div class="wrapper">
         <article>
           <section id="about" class="active">
-            <header><h2><span>À</span> propos</h2></header>
+            <header><h3><span>À</span> propos</h3></header>
             <div class="container row">
               <div class="col col-6 col-sm-12">
                 <p>
@@ -69,7 +73,7 @@
                 </ul>
               </div>
             </div>
-            <header><h2><span>Q</span>uelques mots</h2></header>
+            <header><h3><span>Q</span>uelques mots</h3></header>
             <div class="container row center">
               <div class="col col-6 col-sm-6">
                 <div class="info">
@@ -103,12 +107,12 @@
             <br />
           </section>
           <section id="cv">
-            <header><h2><span>C</span>urriculum vitæ</h2></header>
+            <header><h3><span>C</span>urriculum vitæ</h3></header>
             <div class="container row">
               <div class="col col-6 col-sm-12">
-                <h3>
+                <h4>
                   <i class="fa-solid fa-briefcase"></i> Expérience
-                </h3>
+                </h4>
                 <div class="item">
                   <div class="label">2021 → 2023</div>
                   <div class="title">Développeur Backend</div>
@@ -139,9 +143,9 @@
                 </div>
               </div>
               <div class="col col-6 col-sm-12">
-                <h3>
+                <h4>
                   <i class="fa-solid fa-university"></i> Formation
-                </h3>
+                </h4>
                 <div class="item">
                   <div class="label">2019 → 2020</div>
                   <div class="title">Master 1</div>
@@ -169,14 +173,68 @@
                 <div class="item">
                   <div class="label">2012 → 2015</div>
                   <div class="title">BAC STMG</div>
-                  <div class="subtitle">Lycée Guy Mollet – Arras</div>
+                  <div class="subtitle">Lycée Henri Darras – Liévin</div>
                   <p>Sciences et Technologies du Management et de la Gestion.</p>
                 </div>
               </div>
             </div>
           </section>
+          <section id="skills">
+            <header><h3><span>C</span>ompétences</h3></header>
+            <div class="container row">
+              <div class="col col-6 col-sm-12">
+                <h4><i class="fa-solid fa-code"></i> Langages</h4>
+                <ul class="skills">
+                  <li><i class="fa-solid fa-gem"></i> Ruby</li>
+                  <li><i class="fa-brands fa-python"></i> Python</li>
+                  <li><i class="fa-brands fa-js"></i> JavaScript</li>
+                  <li><i class="fa-brands fa-html5"></i> HTML</li>
+                  <li><i class="fa-brands fa-css3-alt"></i> CSS</li>
+                  <li><i class="fa-brands fa-php"></i> PHP</li>
+                  <li><i class="fa-solid fa-terminal"></i> Shell</li>
+                  <li><i class="fa-solid fa-file-code"></i> TypeScript</li>
+                </ul>
+              </div>
+              <div class="col col-6 col-sm-12">
+                <h4><i class="fa-solid fa-layer-group"></i> Frameworks</h4>
+                <ul class="skills">
+                  <li><i class="fa-solid fa-gem"></i> Rails</li>
+                  <li><i class="fa-solid fa-flask"></i> Flask</li>
+                  <li><i class="fa-solid fa-rocket"></i> FastAPI</li>
+                  <li><i class="fa-brands fa-node-js"></i> Node.js</li>
+                  <li><i class="fa-brands fa-vuejs"></i> Vue 3</li>
+                  <li><i class="fa-solid fa-bolt"></i> Vite 5</li>
+                  <li><i class="fa-solid fa-cloud"></i> Serverless</li>
+                  <li><i class="fa-solid fa-wind"></i> Tailwind</li>
+                  <li><i class="fa-brands fa-bootstrap"></i> Bootstrap</li>
+                </ul>
+              </div>
+              <div class="col col-6 col-sm-12">
+                <h4><i class="fa-solid fa-tools"></i> Outils</h4>
+                <ul class="skills">
+                  <li><i class="fa-brands fa-git-alt"></i> Git</li>
+                  <li><i class="fa-brands fa-gitlab"></i> GitLab</li>
+                  <li><i class="fa-brands fa-docker"></i> Docker</li>
+                  <li><i class="fa-solid fa-terminal"></i> Terminal</li>
+                  <li><i class="fa-solid fa-code"></i> VS Code</li>
+                  <li><i class="fa-solid fa-database"></i> MySQL</li>
+                  <li><i class="fa-solid fa-database"></i> PostgreSQL</li>
+                </ul>
+              </div>
+              <div class="col col-6 col-sm-12">
+                <h4><i class="fa-solid fa-desktop"></i> Environnements</h4>
+                <ul class="skills">
+                  <li><i class="fa-brands fa-windows"></i> Windows</li>
+                  <li><i class="fa-brands fa-linux"></i> Linux</li>
+                  <li><i class="fa-brands fa-ubuntu"></i> Ubuntu</li>
+                  <li><i class="fa-brands fa-apple"></i> Mac</li>
+                </ul>
+              </div>
+            </div>
+          </section>
+          
           <section id="projects">
-            <header><h2><span>M</span>es projets</h2></header>
+            <header><h3><span>M</span>es projets</h3></header>
             <div class="container">
               <div class="col">
                 <p>WIP.</p>
@@ -184,7 +242,7 @@
             </div>
           </section>
           <section id="contact">
-            <header><h2><span>M</span>e contacter</h2></header>
+            <header><h3><span>M</span>e contacter</h3></header>
             <div class="container">
               <div class="col">
                 <div class="map">
