@@ -28,7 +28,6 @@ body:not(.js-ready) article section {
 }
 html,
 body {
-  overflow: hidden;
   margin: 0;
 }
 body {
@@ -233,6 +232,9 @@ article section:focus {
   overflow-y: hidden;
   flex-shrink: 0;
   border-radius: 0 var(--radius) var(--radius) 0;
+  min-height: 0;
+  overscroll-behavior: contain;
+  -webkit-overflow-scrolling: touch;
 }
 .container.row {
   display: flex;
@@ -626,7 +628,7 @@ h4 {
   }
   .wrapper {
     width: 100%;
-    overflow: hidden;
+    overflow: visible;
     flex-shrink: unset;
     min-height: 862px;
   }
@@ -654,7 +656,7 @@ h4 {
     height: 100%;
   }
   aside {
-    margin: 60px 0 25px;
+    margin: 64px 0 25px;
     border-radius: var(--radius);
     box-shadow: unset;
   }
@@ -668,7 +670,7 @@ h4 {
     margin-bottom: 15px;
   }
   article {
-    overflow-y: unset;
+    overflow: visible;
     height: auto;
     margin-bottom: 25px;
     box-shadow: unset;
@@ -681,6 +683,7 @@ h4 {
     scroll-behavior: smooth;
     overflow-y: auto;
     overflow-x: unset;
+    height: auto;
   }
   nav {
     position: fixed;
@@ -714,6 +717,8 @@ h4 {
 @media (max-width: 655px) {
   body {
     background: var(--color-white);
+    display: block;
+    height: auto;
   }
   html,
   body {
@@ -729,7 +734,7 @@ h4 {
     margin-bottom: 0;
   }
   aside {
-    margin: 60px 0 0;
+    margin: 64px 0 0;
     border-radius: unset;
   }
   aside .profile-pic {
@@ -753,6 +758,10 @@ h4 {
       var(--color-border),
       var(--color-white)
     ) 1;
+  }
+  main {
+    width: 100%;
+    height: auto;
   }
 }
 @media (max-width: 560px) {
