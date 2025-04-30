@@ -654,7 +654,7 @@ h4 {
     height: 100%;
   }
   aside {
-    margin: 65px 0 25px;
+    margin: 60px 0 25px;
     border-radius: var(--radius);
     box-shadow: unset;
   }
@@ -729,7 +729,7 @@ h4 {
     margin-bottom: 0;
   }
   aside {
-    margin: 65px 0 0;
+    margin: 60px 0 0;
     border-radius: unset;
   }
   aside .profile-pic {
