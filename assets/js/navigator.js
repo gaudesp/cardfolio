@@ -22,8 +22,10 @@
       this.$window            = $(window);
       this.desktopBreakpoint  = desktopBreakpoint;
       this.mobileBreakpoint   = mobileBreakpoint;
-      this.currentTab  = null;
-      this.isAnimating = false;
+      this.currentTab         = null;
+      this.isAnimating        = false;
+      this.scrollTopBtn       = document.getElementById('scrollTopBtn');
+      this.showScrollAfter    = 100;
 
       this._cacheInitialState();
       this._bindEvents();
@@ -45,6 +47,8 @@
     _bindEvents() {
       this.$navItems.on('click', this._onNavClick.bind(this));
       this.$window.on('resize',  this._onResize.bind(this));
+
+      this._bindScrollListener();
     }
 
     /** initial render: show section, highlight nav, prep wrapper */
@@ -90,6 +94,24 @@
       this._updateSection(this.currentTab);
       $('body').addClass('js-ready');
       this.lastDesktop = nowDesktop;
+    }
+
+    /** show/hide the “Scroll to Top” button and handle the click */
+    _bindScrollListener() {
+      if (!this.scrollTopBtn) return;
+
+      window.addEventListener('scroll', () => {
+        if (window.pageYOffset > this.showScrollAfter) {
+          this.scrollTopBtn.classList.add('show');
+        } else {
+          this.scrollTopBtn.classList.remove('show');
+        }
+      });
+
+      this.scrollTopBtn.addEventListener('click', (e) => {
+        e.preventDefault();
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+      });
     }
 
     /**
@@ -164,11 +186,7 @@
       if (!el) return;
       const targetY = el.getBoundingClientRect().top + scrollY - offset;
     
-      if (scrollY > 0) {
-        window.scrollTo(0, 0);
-      } else {
-        window.scrollTo(0, targetY);
-      }
+      window.scrollTo(0, targetY);
     }
   }
 

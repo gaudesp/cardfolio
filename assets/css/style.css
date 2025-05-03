@@ -132,9 +132,9 @@ body {
 
 /* Layout */
 main {
-  min-width: 1080px;
+  min-width: 1280px;
   max-width: 1500px;
-  max-height: 600px;
+  max-height: 800px;
   width: 66%;
   height: 66%;
   background: transparent;
@@ -649,6 +649,9 @@ h4 {
   height: 100%;
   border: 0;
 }
+.scroll-top-btn {
+  display: none;
+}
 
 /* Media Queries */
 @media (min-width: 1100px) {
@@ -695,7 +698,49 @@ h4 {
     border-image: none;
   }
 }
+@media (max-width: 1300px) {
+  main {
+    min-width: 1080px;
+    max-height: 600px;
+  }
+}
 @media (max-width: 1100px) {
+  .scroll-top-btn {
+    position: fixed;
+    bottom: 1rem;
+    right: 1rem;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 2.75rem;
+    height: 2.75rem;
+    background: var(--color-secondary);
+    color: var(--color-white);
+    border: none;
+    border-radius: 50%;
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 0.3s ease, visibility 0.3s ease;
+    z-index: 100;
+  }
+  .scroll-top-btn.show {
+    opacity: 1;
+    visibility: visible;
+  }
+  .scroll-top-btn:hover {
+    transform: translateY(-2px);
+    transition: transform 0.2s ease;
+  }
+  .sr-only {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0,0,0,0);
+    border: 0;
+  }
   aside .profile-pic {
     flex: none;
     width: 100%;
