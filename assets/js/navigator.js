@@ -26,6 +26,8 @@
       this.isAnimating        = false;
       this.scrollTopBtn       = document.getElementById('scrollTopBtn');
       this.showScrollAfter    = 100;
+      this.navEl              = document.querySelector('nav');
+      this.navHeight          = this.navEl ? this.navEl.offsetHeight : 0;
 
       this._cacheInitialState();
       this._bindEvents();
@@ -49,6 +51,7 @@
       this.$window.on('resize',  this._onResize.bind(this));
 
       this._bindScrollListener();
+      window.addEventListener('scroll', this._onScrollSpy.bind(this));
     }
 
     /** initial render: show section, highlight nav, prep wrapper */
@@ -74,13 +77,26 @@
     _onNavClick(e) {
       e.preventDefault();
       const tab = $(e.currentTarget).data('tab');
-      if (tab === this.currentTab) {
-        if (!this._isDesktop()) {
+    
+      if (window.innerWidth < this.mobileBreakpoint) {
+        if (tab === this.currentTab) {
           this._handleMobileReclick(tab);
+          return;
         }
+    
+        this._updateNav(tab);
+        this.currentTab = tab;
+        const el = document.getElementById(tab);
+        if (!el) return;
+    
+        const offset = this.navHeight;
+        const targetY = el.getBoundingClientRect().top + window.pageYOffset - offset;
+        window.scrollTo({ top: targetY, behavior: 'smooth' });
+        window.location.hash = tab;
         return;
       }
-
+    
+      if (tab === this.currentTab) return;
       this._activateTab(tab);
     }
 
@@ -93,7 +109,29 @@
       this.$wrapper.removeClass('slide-in slide-out');
       this._updateSection(this.currentTab);
       $('body').addClass('js-ready');
+      this.navHeight = this.navEl ? this.navEl.offsetHeight : 0;
       this.lastDesktop = nowDesktop;
+    }
+
+    /** mobile only: updates active tab based on scroll */
+    _onScrollSpy() {
+      if (window.innerWidth >= this.mobileBreakpoint) return;
+
+      const offset = this.navHeight;
+      let newTab = null;
+
+      this.$sections.each((_, sec) => {
+        const rect = sec.getBoundingClientRect();
+        if (rect.top <= offset && rect.bottom > offset) {
+          newTab = sec.id;
+          return false;
+        }
+      });
+
+      if (newTab && newTab !== this.currentTab) {
+        this._updateNav(newTab);
+        this.currentTab = newTab;
+      }
     }
 
     /** show/hide the “Scroll to Top” button and handle the click */
