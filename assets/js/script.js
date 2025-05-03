@@ -51,7 +51,13 @@ $(function() {
   $navItems.filter('[data-tab="' + initial + '"]').addClass('active');
   $navItems.on('click', function() {
     var tab = $(this).data('tab');
-    if (tab !== currentTab) activateTab(tab);
+    if (tab === currentTab) {
+      if (!isDesktop()) {
+        $('html, body').scrollTop(0);
+      }
+      return;
+    }
+    activateTab(tab);
   });
   var lastDesktop = isDesktop();
   $(window).on('resize', function() {
