@@ -1,4 +1,4 @@
 User-agent: *
 Allow: /
 
-Sitemap: https://www.gaudesp.fr/sitemap.xml
+Sitemap: https://gaudesp.fr/sitemap.xml

@@ -7,17 +7,17 @@
   <meta name="description" content="Portfolio de Gauthier Desplanque, développeur confirmé." />
   <meta name="author" content="Gauthier Desplanque" />
   <meta name="copyright" content="© 2025 Gauthier Desplanque" />
-  <link rel="canonical" href="https://www.gaudesp.fr/" />
+  <link rel="canonical" href="https://gaudesp.fr/" />
   <meta name="robots" content="index,follow" />
   <meta property="og:type" content="website" />
   <meta property="og:title" content="Gauthier Desplanque – Développeur Confirmé" />
   <meta property="og:description" content="Portfolio de Gauthier Desplanque, développeur confirmé." />
-  <meta property="og:url" content="https://www.gaudesp.fr/" />
-  <meta property="og:image" content="https://www.gaudesp.fr/assets/img/profile.png" />
+  <meta property="og:url" content="https://gaudesp.fr/" />
+  <meta property="og:image" content="assets/img/profile.png" />
   <meta name="twitter:card" content="summary_large_image" />
   <meta name="twitter:title" content="Gauthier Desplanque – Développeur Confirmé" />
   <meta name="twitter:description" content="Portfolio de Gauthier Desplanque, développeur confirmé." />
-  <meta name="twitter:image" content="https://www.gaudesp.fr/assets/img/profile.png" />
+  <meta name="twitter:image" content="assets/img/profile.png" />
   <link rel="icon" type="image/png" sizes="32x32" href="assets/img/favicons/favicon-32x32.png">
   <link rel="icon" type="image/png" sizes="16x16" href="assets/img/favicons/favicon-16x16.png">
   <link rel="apple-touch-icon" sizes="180x180" href="assets/img/favicons/apple-touch-icon.png">
@@ -29,19 +29,23 @@
       "@context": "https://schema.org",
       "@type": "Person",
       "name": "Gauthier Desplanque",
-      "url": "https://www.gaudesp.fr/",
+      "url": "https://gaudesp.fr/",
+      "image": {
+        "@type": "ImageObject",
+        "url": "https://gaudesp.fr/assets/img/profile-thumbnail.jpg",
+        "width": 400,
+        "height": 400
+      },
       "sameAs": [
         "https://github.com/gaudesp",
-        "https://www.linkedin.com/in/gaudesp/",
-        "https://www.youtube.com/@noxstudio_"
+        "https://www.linkedin.com/in/gaudesp/"
       ],
       "jobTitle": "Développeur Confirmé",
       "address": {
         "@type": "PostalAddress",
         "addressLocality": "Cauchy-à-la-Tour",
         "addressCountry": "FR"
-      },
-      "image": "https://www.gaudesp.fr/assets/img/profile.png"
+      }
     }
     </script>
   <link rel="stylesheet" href="libs/fontawesome/css/all.min.css">
@@ -91,7 +95,12 @@
     </nav>
     <div class="content">
       <aside>
-        <div class="profile-pic"></div>
+        <div class="profile-pic">
+          <img 
+          src="assets/img/profile-thumbnail.jpg" 
+          alt="Portrait de Gauthier Desplanque, développeur confirmé" 
+          class="sr-only">
+        </div>
         <div class="info">
           <h1>Gauthier Desplanque</h1>
           <h3>Développeur Confirmé</h3>
@@ -290,7 +299,7 @@
                 <a href="https://github.com/gaudesp/jvtips-backend" target="_blank">
                   <div class="project">
                     <div class="image">
-                      <img src="assets/img/projects/jvtips_backend.png">
+                      <img src="assets/img/projects/jvtips-backend.png" alt="" aria-hidden="true">
                     </div>
                     <h4>JVTips Backend</h4>
                     <p>API RESTful développée en Python avec FastAPI.</p>
@@ -301,7 +310,7 @@
                 <a href="https://github.com/gaudesp/jvtips-frontend" target="_blank">
                   <div class="project">
                     <div class="image">
-                      <img src="assets/img/projects/jvtips_frontend.png">
+                      <img src="assets/img/projects/jvtips-frontend.png" alt="" aria-hidden="true">
                     </div>
                     <h4>JVTips Frontend</h4>
                     <p>Application Web développée en Vue 3 avec Vite 5.</p>
@@ -312,7 +321,7 @@
                 <a href="https://github.com/gaudesp/forumia" target="_blank">
                   <div class="project">
                     <div class="image">
-                      <img src="assets/img/projects/forumia.png">
+                      <img src="assets/img/projects/forumia.png" alt="" aria-hidden="true">
                     </div>
                     <h4>Forumia</h4>
                     <p>Application Web type forum développée en Ruby avec Rails.</p>
@@ -323,7 +332,7 @@
                 <a href="https://github.com/gaudesp/noxbot" target="_blank">
                   <div class="project">
                     <div class="image">
-                      <img src="assets/img/projects/noxbot.png">
+                      <img src="assets/img/projects/noxbot.png" alt="" aria-hidden="true">
                     </div>
                     <h4>NoxBot</h4>
                     <p>BOT Discord développé en Python avec Discord.py.</p>
@@ -334,7 +343,7 @@
                 <a href="https://github.com/gaudesp/domify" target="_blank">
                   <div class="project">
                     <div class="image">
-                      <img src="assets/img/projects/domify.png">
+                      <img src="assets/img/projects/domify.png" alt="" aria-hidden="true">
                     </div>
                     <h4>Domify</h4>
                     <p>Application Web et mobile développée en Dart avec Flutter.</p>
@@ -345,7 +354,7 @@
                 <a href="https://github.com/gaudesp/cardfolio" target="_blank">
                   <div class="project">
                     <div class="image">
-                      <img src="assets/img/projects/cardfolio.png">
+                      <img src="assets/img/projects/cardfolio.png" alt="" aria-hidden="true">
                     </div>
                     <h4>CardFolio</h4>
                     <p>Application Statique type portfolio développé en HTML, CSS et JavaScript.</p>
@@ -356,7 +365,7 @@
                 <a href="https://github.com/gaudesp/phportfolio" target="_blank">
                   <div class="project">
                     <div class="image">
-                      <img src="assets/img/projects/phportfolio.png">
+                      <img src="assets/img/projects/phportfolio.png" alt="" aria-hidden="true">
                     </div>
                     <h4>PHPortfolio</h4>
                     <p>Application Web type portfolio développé en PHP avec un mini-framework maison.</p>
