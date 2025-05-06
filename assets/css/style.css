@@ -712,7 +712,6 @@ h4 {
     position: static !important;
     transform: none !important;
     height: auto !important;
-    margin: 0 !important;
   }
   .wrapper {
     width: 100%;
@@ -810,7 +809,12 @@ h4 {
     margin-bottom: 25px;
     box-shadow: unset;
     flex-grow: 0;
+    background: transparent;
+  }
+  article section {
+    margin-bottom: 25px;
     border-radius: var(--radius);
+    background: var(--color-white);
   }
   html,
   body {
@@ -850,6 +854,9 @@ h4 {
   }
 }
 @media (max-width: 655px) {
+  body.js-ready article section {
+    margin: 0 !important;
+  }
   .wrapper {
     width: auto;
     overflow: visible !important;

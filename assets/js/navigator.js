@@ -1,238 +1,253 @@
-(() => {
-  'use strict';
+const SELECTORS = {
+  navItems:     'nav ul li[data-tab]', // Éléments de navigation
+  sections:     'article section',     // Sections de contenu à afficher/masquer
+  wrapper:      'article',             // Conteneur principal des sections
+  scrollTopBtn: '#scrollTopBtn',       // Bouton retour en haut
+};
 
-  // Sélecteurs CSS utilisés dans le Navigator
-  const SELECTORS = {
-    navItems:     'nav ul li',       // éléments de navigation
-    sections:     'article section', // sections de contenu
-    wrapper:      'article',         // conteneur principal défilable
-    scrollTopBtn: '#scrollTopBtn',   // bouton "retour en haut"
+const BREAKPOINT = 1100;               // Largeur en px pour le basculement mobile/desktop
+const SHOW_SCROLL_AFTER = 100;         // Scroll Y après lequel le bouton scroll-top apparaît
+const SCROLL_THROTTLE_MS = 50;         // Délai minimal entre 2 appels à scrollSpy
+
+// Fonction utilitaire : limite la fréquence d'appel d'une fonction
+function throttle(fn, wait) {
+  let last = 0;
+  return function (...args) {
+    const now = Date.now();
+    if (now - last >= wait) {
+      last = now;
+      fn.apply(this, args);
+    }
   };
+}
 
-  // Seuil de basculement desktop/mobile et seuil d'affichage du bouton scroll-to-top
-  const BREAKPOINT = 1100;
-  const SHOW_SCROLL_AFTER = 100;
+// Classe de base pour les comportements communs desktop/mobile
+class BaseNavigator {
+  constructor(breakpoint) {
+    this.breakpoint = breakpoint;
+    this.navItems   = [...document.querySelectorAll(SELECTORS.navItems)];
+    this.sections   = [...document.querySelectorAll(SELECTORS.sections)];
+    this.wrapper    = document.querySelector(SELECTORS.wrapper);
+    this.scrollTopBtn = document.querySelector(SELECTORS.scrollTopBtn);
+    this.navEl      = document.querySelector('nav');
+    this.navHeight  = this.navEl?.offsetHeight || 0;
+    this.currentTab = this._initialTab(); // Détermine le tab actif via URL ou premier item
 
-  /**
-   * Classe de base avec logique commune pour desktop et mobile
-   */
-  class BaseNavigator {
-    constructor({ breakpoint }) {
-      // Initialisation des éléments DOM
-      this.navItems     = Array.from(document.querySelectorAll(SELECTORS.navItems));
-      this.sections     = Array.from(document.querySelectorAll(SELECTORS.sections));
-      this.wrapper      = document.querySelector(SELECTORS.wrapper);
-      this.scrollTopBtn = document.querySelector(SELECTORS.scrollTopBtn);
-      this.breakpoint   = breakpoint;
-      this.currentTab   = null;
-      this.navEl        = document.querySelector('nav');
-      this.navHeight    = this.navEl?.offsetHeight ?? 0;
+    this._bindCommon();      // Lie les événements communs (scroll, click, resize...)
+    this._prepareWrapper();  // Préparation spécifique (hook pour les classes enfants)
+    this._start();           // Active le bon onglet/section au chargement
+  }
 
-      // Sauvegarde de l'onglet initial, binding des événements et démarrage
-      this._cacheInitialState();
-      this._bindCommonEvents();
-      this._start();
-    }
-
-    // Lit la hash de l'URL ou prend le premier onglet
-    _cacheInitialState() {
-      const hash = window.location.hash.slice(1);
-      this.initialTab = hash || this.navItems[0].dataset.tab;
-    }
-
-    // Bind des événements partagés (clic nav, resize, scroll, bouton top)
-    _bindCommonEvents() {
-      this.navItems.forEach(item =>
-        item.addEventListener('click', this._onNavClick.bind(this))
-      );
-      window.addEventListener('resize', this._onResize.bind(this));
-      window.addEventListener('scroll', this._onScrollSpy.bind(this));
-
-      if (this.scrollTopBtn) {
-        // Afficher/masquer le bouton "retour en haut"
-        window.addEventListener('scroll', () => {
-          this.scrollTopBtn.classList.toggle(
-            'show',
-            window.pageYOffset > SHOW_SCROLL_AFTER
-          );
-        });
-        // Scroll to top on click
-        this.scrollTopBtn.addEventListener('click', e => {
-          e.preventDefault();
-          window.scrollTo({ top: 0, behavior: 'smooth' });
-        });
-      }
-    }
-
-    // Démarrage : sélection et affichage de l'onglet initial
-    _start() {
-      this.currentTab = this.initialTab;
-      this._updateNav(this.currentTab);
-      this._updateSection(this.currentTab);
-      this._prepareWrapper();
-    }
-
-    // Met à jour l'état actif des items de navigation
-    _updateNav(tab) {
-      this.navItems.forEach(item =>
-        item.classList.toggle('active', item.dataset.tab === tab)
-      );
-    }
-
-    // Affiche la section correspondante et cache les autres
-    _updateSection(tab) {
-      this.sections.forEach(sec => {
-        const active = sec.id === tab;
-        sec.classList.toggle('active', active);
-        sec.style.display = active ? '' : 'none';
-      });
-      // Reset du scroll interne du wrapper
-      this.wrapper.scrollTop = 0;
-    }
-
-    // Handler clic nav : activation ou reclic sur même onglet
-    _onNavClick(evt) {
-      evt.preventDefault();
-      const tab = evt.currentTarget.dataset.tab;
-
-      if (tab === this.currentTab) {
-        this._onSameTabClick(tab);
-      } else {
-        this._activateTab(tab);
-      }
-    }
-
-    // Placeholders à redéfinir selon mobile/desktop
-    _onResize() {}
-    _onScrollSpy() {}
-    _onSameTabClick(tab) {}
-
-    // Activation basique : mise à jour nav + section + hash
-    _activateTab(tab) {
-      this._updateNav(tab);
-      this._updateSection(tab);
-      window.location.hash = tab;
-      this.currentTab = tab;
+  // Nettoie les listeners avant de changer de mode
+  destroy() {
+    this.navItems.forEach(item =>
+      item.removeEventListener('click', this._onNavClickBound)
+    );
+    window.removeEventListener('resize', this._onResizeBound);
+    window.removeEventListener('scroll', this._scrollSpyBound);
+    if (this.scrollTopBtn) {
+      window.removeEventListener('scroll', this._toggleScrollBound);
+      this.scrollTopBtn.removeEventListener('click', this._onScrollTopBound);
     }
   }
 
-  /**
-   * Navigator pour desktop : slide animations
-   */
-  class DesktopNavigator extends BaseNavigator {
-    // Prépare l'animation d'entrée
-    _prepareWrapper() {
-      document.body.classList.add('js-ready');
-      this.wrapper.classList.add('slide-in');
-      this.wrapper.addEventListener(
-        'transitionend',
-        () => this.wrapper.classList.remove('slide-in'),
-        { once: true }
-      );
-    }
+  // Récupère l'onglet actif depuis l'URL ou utilise le premier onglet
+  _initialTab() {
+    const hash = window.location.hash.slice(1);
+    return hash || this.navItems[0]?.dataset.tab;
+  }
 
-    // Activation avec slide-out puis slide-in
-    _activateTab(tab) {
-      if (this.isAnimating) return;
-      this.isAnimating = true;
+  // Lie tous les événements communs (clicks, scroll, resize)
+  _bindCommon() {
+    this._onNavClickBound = e => this._onNavClick(e);
+    this._onResizeBound   = () => this._onResize();
+    this._scrollSpyBound  = throttle(() => this._onScrollSpy(), SCROLL_THROTTLE_MS);
+    this._toggleScrollBound = () =>
+      this.scrollTopBtn?.classList.toggle('show', window.pageYOffset > SHOW_SCROLL_AFTER);
+    this._onScrollTopBound = e => { e.preventDefault(); this._onScrollTopClick(); };
 
-      // Phase slide-out
-      this.wrapper.addEventListener(
-        'transitionend',
-        () => {
-          // Changement de section
-          super._updateSection(tab);
-          // Phase slide-in
-          this.wrapper.classList.replace('slide-out', 'slide-in');
-          this.wrapper.addEventListener(
-            'transitionend',
-            () => {
-              this.wrapper.classList.remove('slide-in');
-              this.isAnimating = false;
-            },
-            { once: true }
-          );
-        },
-        { once: true }
-      );
-
-      // Trigger reflow + début slide-out
-      this.wrapper.offsetWidth;
-      this.wrapper.classList.add('slide-out');
-
-      // Mise à jour nav, hash et scroll top
-      super._updateNav(tab);
-      window.location.hash = tab;
-      document.documentElement.scrollTop = 0;
-      this.currentTab = tab;
+    this.navItems.forEach(item =>
+      item.addEventListener('click', this._onNavClickBound)
+    );
+    window.addEventListener('resize', this._onResizeBound);
+    window.addEventListener('scroll', this._scrollSpyBound);
+    if (this.scrollTopBtn) {
+      window.addEventListener('scroll', this._toggleScrollBound);
+      this.scrollTopBtn.addEventListener('click', this._onScrollTopBound);
     }
   }
 
-  /**
-   * Navigator pour mobile : scroll smooth + scroll spy
-   */
-  class MobileNavigator extends BaseNavigator {
-    // Prépare l'affichage sans animation
-    _prepareWrapper() {
-      document.body.classList.add('js-ready');
-    }
-
-    // Activation : scroll vers la section
-    _activateTab(tab) {
-      super._updateNav(tab);
-      this._scrollToSection(tab);
-      window.location.hash = tab;
-      this.currentTab = tab;
-    }
-
-    // Défilement lisse en compensant la hauteur de la nav
-    _scrollToSection(tab) {
-      const el = document.getElementById(tab);
-      if (!el) return;
-      this.navHeight = this.navEl?.offsetHeight ?? 0;
-      const y = el.getBoundingClientRect().top + window.pageYOffset - this.navHeight;
-      window.scrollTo({ top: y, behavior: 'smooth' });
-    }
-
-    // Scroll spy : mise à jour de l'onglet actif en scrollant
-    _onScrollSpy() {
-      this.navHeight = this.navEl?.offsetHeight ?? 0;
-      const offset = this.navHeight;
-      let newTab = null;
-      for (const sec of this.sections) {
-        const rect = sec.getBoundingClientRect();
-        if (rect.top <= offset && rect.bottom > offset) {
-          newTab = sec.id;
-          break;
-        }
-      }
-      if (newTab && newTab !== this.currentTab) {
-        this._updateNav(newTab);
-        this.currentTab = newTab;
-      }
-    }
-
-    // Si on reclique sur le même onglet, on remonte vers son sommet
-    _onSameTabClick(tab) {
-      this._scrollToSection(tab);
-    }
+  // Active l'onglet et la section courants
+  _start() {
+    this._updateNav(this.currentTab);
+    this._updateSection(this.currentTab);
   }
 
-  // Initialisation au chargement du DOM
-  document.addEventListener('DOMContentLoaded', () => {
-    let navigator;
-    const isDesktop = window.innerWidth > BREAKPOINT;
-    navigator = isDesktop
-      ? new DesktopNavigator({ breakpoint: BREAKPOINT })
-      : new MobileNavigator({ breakpoint: BREAKPOINT });
+  // Active l'onglet visuellement
+  _updateNav(tab) {
+    this.navItems.forEach(item =>
+      item.classList.toggle('active', item.dataset.tab === tab)
+    );
+  }
 
-    // Sur resize crossing breakpoint → reload pour réinitialiser le mode
-    window.addEventListener('resize', () => {
-      const nowDesktop = window.innerWidth > BREAKPOINT;
-      const wasDesktop = navigator instanceof DesktopNavigator;
-      if (nowDesktop !== wasDesktop) {
-        window.location.reload();
-      }
+  // Affiche la bonne section, masque les autres
+  _updateSection(tab) {
+    this.sections.forEach(sec => {
+      const active = sec.id === tab;
+      sec.classList.toggle('active', active);
+      sec.style.display = active ? '' : 'none';
     });
-  });
-})();
+    if (this.wrapper) this.wrapper.scrollTop = 0;
+  }
+
+  // Hooks (à surcharger)
+  _prepareWrapper() {}
+  _onNavClick(evt) {}
+
+  // Surveille le redimensionnement pour basculer desktop <-> mobile
+  _onResize() {
+    const isDesktop = window.innerWidth > this.breakpoint;
+    const isCurrentlyDesktop = this instanceof DesktopNavigator;
+
+    if (isDesktop !== isCurrentlyDesktop) {
+      this.destroy(); // Nettoie l'ancien mode
+      const NewNavClass = isDesktop ? DesktopNavigator : MobileNavigator;
+      navigatorInstance = new NewNavClass(this.breakpoint);
+
+      // En mobile : scroll vers la section courante
+      if (!isDesktop && navigatorInstance instanceof MobileNavigator) {
+        navigatorInstance.isManualScroll = true;
+        navigatorInstance._scrollTo(this.currentTab);
+        setTimeout(() => {
+          navigatorInstance.isManualScroll = false;
+        }, 1000);
+      }
+    }
+  }
+
+  _onScrollSpy() {}        // À définir dans MobileNavigator
+  _onScrollTopClick() {}   // À définir dans MobileNavigator
+}
+
+// Comportement spécifique au mode Desktop : transitions + animations
+class DesktopNavigator extends BaseNavigator {
+  _prepareWrapper() {
+    document.body.classList.add('js-ready');
+    this.wrapper.classList.add('slide-in');
+    this.wrapper.addEventListener('transitionend', () =>
+      this.wrapper.classList.remove('slide-in'), { once: true }
+    );
+    this.isAnimating = false; // Empêche les clics pendant les transitions
+  }
+
+  // Gère le clic sur un onglet
+  _onNavClick(evt) {
+    evt.preventDefault();
+    const tab = evt.currentTarget.dataset.tab;
+    if (tab === this.currentTab || this.isAnimating) return;
+    this._activateTab(tab);
+  }
+
+  // Lance la transition de changement d'onglet
+  _activateTab(tab) {
+    this.isAnimating = true;
+    this.wrapper.addEventListener('transitionend', () => {
+      super._updateSection(tab); // Change la section visible
+      this._enter();             // Transition d'entrée
+    }, { once: true });
+
+    this._exit();                        // Transition de sortie
+    super._updateNav(tab);              // Active le bon onglet
+    history.replaceState(null, '', `#${tab}`);
+    document.documentElement.scrollTop = 0;
+    this.currentTab = tab;
+  }
+
+  // Lance animation de sortie
+  _exit() {
+    void this.wrapper.offsetWidth; // Force reflow pour relancer l'animation
+    this.wrapper.classList.add('slide-out');
+  }
+
+  // Lance animation d'entrée
+  _enter() {
+    this.wrapper.classList.replace('slide-out', 'slide-in');
+    this.wrapper.addEventListener('transitionend', () => {
+      this.wrapper.classList.remove('slide-in');
+      this.isAnimating = false;
+    }, { once: true });
+  }
+}
+
+// Comportement spécifique au mode Mobile : scroll naturel, spy, scrollTop
+class MobileNavigator extends BaseNavigator {
+  _prepareWrapper() {
+    document.body.classList.add('js-ready');
+    // Réinitialise isManualScroll lors d'un scroll utilisateur
+    ['wheel','touchstart'].forEach(evt =>
+      window.addEventListener(evt, () => this.isManualScroll = false, { passive: true })
+    );
+    this.isManualScroll = false;
+  }
+
+  // Gère le clic sur un onglet en mobile
+  _onNavClick(evt) {
+    evt.preventDefault();
+    const tab = evt.currentTarget.dataset.tab;
+    this.isManualScroll = true;
+    if (tab === this.currentTab) this._scrollTo(tab);
+    else this._activateTab(tab);
+  }
+
+  // Active l'onglet et scroll vers la section
+  _activateTab(tab) {
+    super._updateNav(tab);
+    this._scrollTo(tab);
+    history.replaceState(null, '', `#${tab}`);
+    this.currentTab = tab;
+  }
+
+  // Fait défiler la page jusqu'à la section
+  _scrollTo(tab) {
+    const el = document.getElementById(tab);
+    if (!el) return;
+    const behavior = Math.abs(window.pageYOffset - (el.getBoundingClientRect().top + window.pageYOffset)) < 1
+      ? 'auto' : 'smooth';
+    el.scrollIntoView({ behavior, block: 'start' });
+  }
+
+  // Détecte la section actuellement visible et met à jour la nav
+  _onScrollSpy() {
+    if (this.isManualScroll) return;
+    this.navHeight = this.navEl?.offsetHeight || 0;
+    let active = null;
+    for (const sec of this.sections) {
+      const { top, bottom } = sec.getBoundingClientRect();
+      if (top <= this.navHeight && bottom > this.navHeight) {
+        active = sec.id; break;
+      }
+    }
+    if (active && active !== this.currentTab) {
+      super._updateNav(active);
+      super._updateSection(active);
+      this.currentTab = active;
+    }
+  }
+
+  // Gère le clic sur le bouton retour en haut
+  _onScrollTopClick() {
+    this.isManualScroll = true;
+    super._updateNav(this.navItems[0].dataset.tab);
+    this.sections.forEach(sec => { sec.classList.remove('active'); sec.style.display='none'; });
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+    history.replaceState(null, '', window.location.pathname);
+    setTimeout(() => this.isManualScroll = false, 1000);
+  }
+}
+
+// Création de l'instance globale selon la taille de l'écran
+let navigatorInstance = null;
+window.addEventListener('DOMContentLoaded', () => {
+  const isDesktop = window.innerWidth > BREAKPOINT;
+  navigatorInstance = new (isDesktop ? DesktopNavigator : MobileNavigator)(BREAKPOINT);
+});
