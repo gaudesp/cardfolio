@@ -16,7 +16,6 @@ cd cardfolio
 
 ## 📦 Dépendances
 - `Font Awesome` : Bibliothèque d’icônes pour embellir les cartes et les boutons.
-- `jQuery` : Utilisé pour simplifier certaines manipulations DOM.
 - `navigator.js` : Gestionnaire de navigation entre les sections avec animations (desktop) et scroll (mobile).
 - `style.css` : Feuille de style personnalisée pour le design responsive et moderne.
 - `HTML5` & `CSS3` : Technologies de base pour la structure et le style.
