@@ -818,7 +818,7 @@ h4 {
   }
   html,
   body {
-    scroll-padding-top: 89px;
+    scroll-padding-top: 88px;
     scroll-behavior: smooth;
     overflow-y: auto;
     overflow-x: unset;
