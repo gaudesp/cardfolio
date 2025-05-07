@@ -13,6 +13,9 @@
   --color-primary-rgb: 134, 209, 124;
   --color-secondary: #50a2a1;
   --color-secondary-rgb: 80, 162, 161;
+  --color-success: #28a745;
+  --color-danger: #dc3545;
+  --color-info: #17a2b8;
   --color-border: #dfdfdf;
   --color-grey-dark: #7f7f7f;
   --color-white: #ffffff;
@@ -202,14 +205,21 @@ nav ul li.active .nav-label {
 
 /* Buttons */
 .btn {
-  display: inline-block;
+  display: flex;
   padding: 0.5rem 1rem;
   background-color: var(--color-secondary);
   color: var(--color-white);
+  font-family: var(--font-family);
+  font-size: 16px;
   font-weight: 600;
   text-decoration: none;
+  border: none;
   border-radius: var(--radius);
   transition: background var(--transition), color var(--transition);
+  cursor: pointer;
+  appearance: none;
+  -webkit-appearance: none;
+  align-items: center;
 }
 .btn:hover {
   background-color: var(--color-primary);
@@ -653,6 +663,103 @@ h4 {
   display: none;
 }
 
+/* Formulaire */
+.contact-form {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+.contact-form label {
+  display: flex;
+  flex-direction: column;
+  font-weight: 500;
+}
+.contact-form label span {
+  color: var(--color-dark);
+  padding: 6px 3px;
+  border-radius: var(--radius);
+  display: inline-flex;
+  align-items: center;
+  white-space: nowrap;
+  font-weight: 600;
+}
+.contact-form label span i {
+  font-weight: 500;
+  color: var(--color-secondary);
+  margin-right: 6px;
+}
+.contact-form input,
+.contact-form textarea {
+  padding: 0.5rem;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius);
+  font-family: var(--font-family);
+}
+.contact-form input:focus,
+.contact-form textarea:focus {
+  border: 1px solid var(--color-primary);
+  background-color: #fff;
+  outline: none;
+}
+.contact-form .btn {
+  align-self: flex-start;
+  height: 40px;
+}
+.contact-form .btn[disabled] {
+  opacity: 0.6;
+  cursor: default;
+}
+.contact-form .btn:hover:not([disabled]) {
+  background: var(--color-primary);
+}
+.form-message {
+  position: fixed;
+  bottom: 2rem;
+  right: 2rem;
+  z-index: 1000;
+  background: var(--color-white);
+  padding: 0.75rem 1rem 0.75rem 1rem;
+  border-radius: var(--radius);
+  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+  opacity: 0;
+  transform: translateX(100%);
+  transition: opacity var(--transition), transform var(--transition);
+  pointer-events: none;
+  min-width: 200px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  height: 25px;
+}
+.form-message .text {
+  flex: 1;
+  margin-right: 1.25rem;
+}
+.form-message.success { border-left: 4px solid var(--color-success); color: var(--color-success); }
+.form-message.error   { border-left: 4px solid var(--color-danger); color: var(--color-danger); }
+.form-message.info    { border-left: 4px solid var(--color-info); color: var(--color-info); }
+.form-message.show {
+  opacity: 1;
+  transform: translateX(0);
+  pointer-events: auto;
+}
+.form-message .close-btn {
+  position: absolute;
+  top: 0;
+  right: 0;
+  width: 2.5rem;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1rem;
+  cursor: pointer;
+  color: var(--color-grey-dark);
+}
+.form-message .close-btn:hover {
+  color: var(--color-dark);
+}
+
 /* Media Queries */
 @media (min-width: 1101px) {
   .content {
@@ -705,6 +812,11 @@ h4 {
   }
 }
 @media (max-width: 1100px) {
+  .form-message {
+    bottom: 1rem;
+    left: 1.5rem;
+    right: auto;
+  }
   body.js-ready article section {
     display: block !important;
     visibility: visible !important;
@@ -854,6 +966,10 @@ h4 {
   }
 }
 @media (max-width: 655px) {
+  .form-message {
+    width: 60%;
+    line-height: 1rem;
+  }
   body.js-ready article section {
     margin: 0 !important;
   }

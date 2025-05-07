@@ -47,10 +47,13 @@
         "addressCountry": "FR"
       }
     }
-    </script>
+  </script>
+  <script src="https://www.google.com/recaptcha/api.js" async defer></script>
+  <script src="assets/js/navigator.js" defer></script>
+  <script src="assets/js/formspree.js" defer></script>
+
   <link rel="stylesheet" href="libs/fontawesome/css/all.min.css">
   <link rel="stylesheet" href="assets/css/style.css">
-  <script src="assets/js/navigator.js" defer></script>
 </head>
 <body>
   <div class="background gradient">
@@ -392,7 +395,7 @@
               <div class="col col-6 col-sm-12">
                 <p>
                   Je privilégie le télétravail en raison de ma localisation géographique.
-                  N'hésitez pas à me contacter par email si vous avez une opportunitée à me proposer.
+                  N'hésitez pas à me contacter par email ou via le formulaire ci-dessous pour toute opportunité.
                 </p>
               </div>
               <div class="col col-6 col-sm-12">
@@ -402,10 +405,30 @@
                 </ul>
               </div>
             </div>
+            <header><h2><span>F</span>ormulaire</h2></header>
+            <div class="container">
+              <div class="col">
+                <form id="contactForm" class="contact-form">
+                  <input type="text" name="_gotcha" style="display:none" tabindex="-1" autocomplete="off" />
+                  <input type="hidden" name="form_id" value="mpwdrzej">
+                  <label>
+                    <span><i class="fa-solid fa-at"></i> Email</span>
+                    <input type="email" name="email" placeholder="Votre adresse email" required />
+                  </label>
+                  <label>
+                    <span><i class="fa-solid fa-message"></i> Message</span>
+                    <textarea value="test" name="message" rows="10" maxlength="5000" placeholder="Votre message..." required></textarea>
+                  </label>
+                  <div class="g-recaptcha" data-sitekey="6LfwTjErAAAAAE5A2dyaERVEbdIDVvCeBgLvtCfx"></div>
+                  <button type="submit" class="btn" id="submitBtn">Envoyer</button>
+                </form>
+              </div>
+            </div>
           </section>
         </article>
       </div>
     </div>
+    <div id="formMessage" class="form-message"></div>
   </main>
   <button id="scrollTopBtn" aria-label="Retour en haut" class="scroll-top-btn">
     <i class="fa-solid fa-arrow-up"></i>
