@@ -32,6 +32,7 @@ class BaseNavigator {
     this.navEl      = document.querySelector('nav');
     this.navHeight  = this.navEl?.offsetHeight || 0;
     this.currentTab = this._initialTab(); // Détermine le tab actif via URL ou premier item
+    this.prevZone   = window.innerWidth > BREAKPOINT ? 'desktop' : (window.innerWidth > 655 ? 'tablet' : 'mobile');
 
     this._bindCommon();      // Lie les événements communs (scroll, click, resize...)
     this._prepareWrapper();  // Préparation spécifique (hook pour les classes enfants)
@@ -104,29 +105,47 @@ class BaseNavigator {
   _prepareWrapper() {}
   _onNavClick(evt) {}
 
-  // Surveille le redimensionnement pour basculer desktop <-> mobile
+  // Surveille le redimensionnement pour basculer entre desktop, tablette et mobile
   _onResize() {
-    const isDesktop = window.innerWidth > this.breakpoint;
-    const isCurrentlyDesktop = this instanceof DesktopNavigator;
+    const w = window.innerWidth;
+    const isDesktop = w > this.breakpoint;
+    const isTablet  = w <= this.breakpoint && w > 655;
+    const isMobile  = w <= 655;
 
-    if (isDesktop !== isCurrentlyDesktop) {
-      this.destroy(); // Nettoie l'ancien mode
-      const NewNavClass = isDesktop ? DesktopNavigator : MobileNavigator;
-      navigatorInstance = new NewNavClass(this.breakpoint);
+    if ((this.prevZone === 'desktop') !== isDesktop) {
+      this._switchMode(isDesktop ? DesktopNavigator : MobileNavigator, !isDesktop);
+      this.prevZone = isDesktop ? 'desktop' : 'mobile';
+      return;
+    }
 
-      // En mobile : scroll vers la section courante
-      if (!isDesktop && navigatorInstance instanceof MobileNavigator) {
-        navigatorInstance.isManualScroll = true;
-        navigatorInstance._scrollTo(this.currentTab);
-        setTimeout(() => {
-          navigatorInstance.isManualScroll = false;
-        }, 1000);
-      }
+    if (this.prevZone === 'tablet' && isMobile) {
+      this._switchMode(MobileNavigator, true);
+      this.prevZone = 'mobile';
+      return;
+    }
+    if (this.prevZone === 'mobile' && isTablet) {
+      this._switchMode(MobileNavigator, true);
+      this.prevZone = 'tablet';
+      return;
     }
   }
 
-  _onScrollSpy() {}        // À définir dans MobileNavigator
-  _onScrollTopClick() {}   // À définir dans MobileNavigator
+  _switchMode(NavClass, scrollToTab) {
+    this.destroy();
+    navigatorInstance = new NavClass(this.breakpoint);
+    if (scrollToTab && navigatorInstance instanceof MobileNavigator) {
+      navigatorInstance.isManualScroll = true;
+      navigatorInstance._scrollTo(this.currentTab);
+      setTimeout(() => {
+        navigatorInstance.isManualScroll = false;
+      }, 1000);
+    }
+    navigatorInstance._updateNav(this.currentTab);
+    navigatorInstance._updateSection(this.currentTab);
+  }
+
+  _onScrollSpy() {}
+  _onScrollTopClick() {}
 }
 
 // Comportement spécifique au mode Desktop : transitions + animations
@@ -137,10 +156,9 @@ class DesktopNavigator extends BaseNavigator {
     this.wrapper.addEventListener('transitionend', () =>
       this.wrapper.classList.remove('slide-in'), { once: true }
     );
-    this.isAnimating = false; // Empêche les clics pendant les transitions
+    this.isAnimating = false;
   }
 
-  // Gère le clic sur un onglet
   _onNavClick(evt) {
     evt.preventDefault();
     const tab = evt.currentTarget.dataset.tab;
@@ -148,28 +166,25 @@ class DesktopNavigator extends BaseNavigator {
     this._activateTab(tab);
   }
 
-  // Lance la transition de changement d'onglet
   _activateTab(tab) {
     this.isAnimating = true;
     this.wrapper.addEventListener('transitionend', () => {
-      super._updateSection(tab); // Change la section visible
-      this._enter();             // Transition d'entrée
+      super._updateSection(tab);
+      this._enter();
     }, { once: true });
 
-    this._exit();                        // Transition de sortie
-    super._updateNav(tab);              // Active le bon onglet
+    this._exit();
+    super._updateNav(tab);
     history.replaceState(null, '', `#${tab}`);
     document.documentElement.scrollTop = 0;
     this.currentTab = tab;
   }
 
-  // Lance animation de sortie
   _exit() {
-    void this.wrapper.offsetWidth; // Force reflow pour relancer l'animation
+    void this.wrapper.offsetWidth;
     this.wrapper.classList.add('slide-out');
   }
 
-  // Lance animation d'entrée
   _enter() {
     this.wrapper.classList.replace('slide-out', 'slide-in');
     this.wrapper.addEventListener('transitionend', () => {
@@ -183,14 +198,12 @@ class DesktopNavigator extends BaseNavigator {
 class MobileNavigator extends BaseNavigator {
   _prepareWrapper() {
     document.body.classList.add('js-ready');
-    // Réinitialise isManualScroll lors d'un scroll utilisateur
     ['wheel','touchstart'].forEach(evt =>
       window.addEventListener(evt, () => this.isManualScroll = false, { passive: true })
     );
     this.isManualScroll = false;
   }
 
-  // Gère le clic sur un onglet en mobile
   _onNavClick(evt) {
     evt.preventDefault();
     const tab = evt.currentTarget.dataset.tab;
@@ -199,7 +212,6 @@ class MobileNavigator extends BaseNavigator {
     else this._activateTab(tab);
   }
 
-  // Active l'onglet et scroll vers la section
   _activateTab(tab) {
     super._updateNav(tab);
     this._scrollTo(tab);
@@ -207,16 +219,12 @@ class MobileNavigator extends BaseNavigator {
     this.currentTab = tab;
   }
 
-  // Fait défiler la page jusqu'à la section
   _scrollTo(tab) {
     const el = document.getElementById(tab);
     if (!el) return;
-    const behavior = Math.abs(window.pageYOffset - (el.getBoundingClientRect().top + window.pageYOffset)) < 1
-      ? 'auto' : 'smooth';
-    el.scrollIntoView({ behavior, block: 'start' });
+    el.scrollIntoView({ behavior: 'smooth', block: 'start' });
   }
 
-  // Détecte la section actuellement visible et met à jour la nav
   _onScrollSpy() {
     if (this.isManualScroll) return;
     this.navHeight = this.navEl?.offsetHeight || 0;
@@ -234,7 +242,6 @@ class MobileNavigator extends BaseNavigator {
     }
   }
 
-  // Gère le clic sur le bouton retour en haut
   _onScrollTopClick() {
     this.isManualScroll = true;
     super._updateNav(this.navItems[0].dataset.tab);
@@ -245,7 +252,7 @@ class MobileNavigator extends BaseNavigator {
   }
 }
 
-// Création de l'instance globale selon la taille de l'écran
+// Initialisation
 let navigatorInstance = null;
 window.addEventListener('DOMContentLoaded', () => {
   const isDesktop = window.innerWidth > BREAKPOINT;
