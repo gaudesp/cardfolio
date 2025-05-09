@@ -1,0 +1,21 @@
+@keyframes typewriter {
+  from { width: 0; }
+  to { width: 210px; }
+}
+@keyframes blinkingCursor{
+  from { border-right-color: rgba(var(--color-secondary-rgb),.75); }
+  to { border-right-color: transparent; }
+}
+@keyframes hideCursor {
+  to { border-right: none; }
+}
+@keyframes rise {
+  0% {
+    transform: translateY(0) scale(1);
+    opacity: 1;
+  }
+  100% {
+    transform: translateY(-1000px) scale(1.5);
+    opacity: 0;
+  }
+}

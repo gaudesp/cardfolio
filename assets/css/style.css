@@ -2,6 +2,7 @@
 
 /* Imports */
 @import url(fonts.css);
+@import url(animate.css);
 
 /* Variables */
 :root {
@@ -98,18 +99,6 @@
 .bg-bubbles li:nth-child(10) {
   left: 90%;
   animation-duration: 15s;
-}
-
-/* Animation */
-@keyframes rise {
-  0% {
-    transform: translateY(0) scale(1);
-    opacity: 1;
-  }
-  100% {
-    transform: translateY(-1000px) scale(1.5);
-    opacity: 0;
-  }
 }
 
 /* Base Styles */
@@ -220,10 +209,15 @@ nav ul li.active .nav-label {
   appearance: none;
   -webkit-appearance: none;
   align-items: center;
+  min-width: 100px;
 }
 .btn:hover {
-  background-color: var(--color-primary);
+  background: var(--color-primary);
   color: var(--color-white);
+  border: 3px solid var(--color-secondary);
+  border-top: none;
+  border-left: none;
+  width: auto;
 }
 
 /* Aside/Profile */
@@ -271,22 +265,50 @@ aside .aside-buttons {
   margin-top: 20px;
 }
 aside .info h3 {
-  margin: 0.5rem 0;
   color: var(--color-primary);
+  position: relative;
+  border-right: 2px solid rgba(var(--color-secondary-rgb),.75);
+  text-align: center;
+  white-space: nowrap;
+  overflow: hidden;
+  animation: 
+    typewriter 1s steps(50) 1s 1 normal both, 
+    blinkingCursor 500ms steps(50) infinite normal,
+    hideCursor 0s linear 2s 1 forwards;
 }
-aside .social-icons {
+
+/* Social Icon */
+ul.social-icons {
   display: flex;
-  gap: 1rem;
-  margin-top: 1rem;
-  margin-bottom: 2.5rem;
-}
-aside .social-icons a {
-  font-size: 1.5rem;
   color: var(--color-dark);
-  transition: color var(--transition);
+  gap: 20px;
+  padding-inline-start: 0;
 }
-aside .social-icons a:hover {
+
+ul.social-icons li {
+  list-style: none;
+}
+
+ul.social-icons li a {
+  background-color: #fff;
+  text-align: center;
+  font-size: 25px;
+  display: block;
+  position: relative;
+  overflow: hidden;
+  z-index: 1;
+}
+
+ul.social-icons li a .icon {
+  position: relative;
+  color: #262626;
+  transition: .5s;
+  z-index: 3;
+}
+
+ul.social-icons li a:hover .icon {
   color: var(--color-primary);
+  transform: rotateY(360deg);
 }
 
 /* Article */
@@ -794,6 +816,10 @@ h4 {
   article.slide-in {
     transform: translateX(0%);
   }
+  .initial-hide {
+    transform: translateX(-100%);
+    transition: none;
+  }
   .wrapper > article {
     width: 100%;
     overflow-y: auto;
@@ -910,10 +936,6 @@ h4 {
     position: unset;
     bottom: 0;
     margin-top: 0;
-  }
-  aside .social-icons {
-    margin-top: 0;
-    margin-bottom: 15px;
   }
   article {
     overflow: visible;

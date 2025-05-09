@@ -177,11 +177,16 @@ class DesktopNavigator extends BaseNavigator {
    */
   _prepareWrapper() {
     document.body.classList.add('js-ready');
-    this.wrapper.classList.add('slide-in');
-    this.wrapper.addEventListener('transitionend', () =>
-      this.wrapper.classList.remove('slide-in'), { once: true }
-    );
-    this.isAnimating = false;
+    this.wrapper.classList.add('initial-hide');
+
+    setTimeout(() => {
+      this.wrapper.classList.remove('initial-hide');
+      this.wrapper.classList.add('slide-in');
+      this.wrapper.addEventListener('transitionend', () => {
+        this.wrapper.classList.remove('slide-in');
+      }, { once: true });
+      this.isAnimating = false;
+    }, 100);
   }
 
   /**
