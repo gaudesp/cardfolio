@@ -4,10 +4,10 @@
   xmlns:image="http://www.google.com/schemas/sitemap-image/1.1">
   <url>
     <loc>https://gaudesp.fr/</loc>
-    <lastmod>2025-05-09</lastmod>
+    <lastmod>2025-05-10</lastmod>
     <priority>1.0</priority>
     <image:image>
-      <image:loc>https://gaudesp.fr/assets/img/profile.png</image:loc>
+      <image:loc>https://gaudesp.fr/assets/img/profile-thumbnail.jpg</image:loc>
       <image:caption>Portrait de Gauthier Desplanque</image:caption>
       <image:title>Gauthier Desplanque</image:title>
     </image:image>

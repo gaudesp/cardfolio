@@ -3,6 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="application-name" content="Gauthier Desplanque">
   <meta name="description" content="Je suis Gauthier Desplanque, développeur confirmé spécialisé dans la création de tous types d'applications, basé près de Béthune dans le Pas-de-Calais" />
   <meta name="max-snippet" content="130">
   <title>Gauthier Desplanque – Développeur Confirmé</title>
@@ -15,11 +16,11 @@
   <meta property="og:title" content="Gauthier Desplanque – Développeur Confirmé" />
   <meta property="og:description" content="Je suis Gauthier Desplanque, développeur confirmé spécialisé dans la création de tous types d'applications, basé près de Béthune dans le Pas-de-Calais" />
   <meta property="og:url" content="https://gaudesp.fr/" />
-  <meta property="og:image" content="/assets/img/profile.png" />
+  <meta property="og:image" content="/assets/img/profile-thumbnail.jpg" />
   <meta name="twitter:card" content="summary_large_image" />
   <meta name="twitter:title" content="Gauthier Desplanque – Développeur Confirmé" />
   <meta name="twitter:description" content="Je suis Gauthier Desplanque, développeur confirmé spécialisé dans la création de tous types d'applications, basé près de Béthune dans le Pas-de-Calais" />
-  <meta name="twitter:image" content="/assets/img/profile.png" />
+  <meta name="twitter:image" content="/assets/img/profile-thumbnail.jpg" />
   <link rel="icon" href="/favicon.ico" />
   <link rel="icon" type="image/png" sizes="32x32" href="/assets/img/favicons/favicon-32x32.png">
   <link rel="icon" type="image/png" sizes="16x16" href="/assets/img/favicons/favicon-16x16.png">
@@ -28,28 +29,53 @@
   <meta name="theme-color" content="#ffffff">
 
   <script type="application/ld+json">
-    {
-      "@context": "https://schema.org",
-      "@type": "Person",
-      "name": "Gauthier Desplanque",
-      "url": "https://gaudesp.fr/",
-      "image": {
-        "@type": "ImageObject",
-        "url": "https://gaudesp.fr/assets/img/profile-thumbnail.jpg",
-        "width": 400,
-        "height": 400
+  {
+    "@context": "https://schema.org",
+    "@graph": [
+      {
+        "@id": "https://gaudesp.fr/#website",
+        "@type": "WebSite",
+        "name": "Gauthier Desplanque",
+        "alternateName": "gaudesp",
+        "url": "https://gaudesp.fr/",
+        "description": "Je suis Gauthier Desplanque, développeur confirmé spécialisé dans la création de tous types d'applications, basé près de Béthune dans le Pas-de-Calais",
+        "publisher": {
+          "@type": "Organization",
+          "name": "Gauthier Desplanque",
+          "logo": {
+            "@type": "ImageObject",
+            "url": "https://gaudesp.fr/assets/img/favicons/apple-touch-icon.png",
+            "width": 180,
+            "height": 180
+          }
+        }
       },
-      "sameAs": [
-        "https://github.com/gaudesp",
-        "https://www.linkedin.com/in/gaudesp/"
-      ],
-      "jobTitle": "Développeur Confirmé",
-      "address": {
-        "@type": "PostalAddress",
-        "addressLocality": "Cauchy-à-la-Tour",
-        "addressCountry": "FR"
+      {
+        "@id": "https://gaudesp.fr/#person",
+        "@type": "Person",
+        "name": "Gauthier Desplanque",
+        "alternateName": "gaudesp",
+        "url": "https://gaudesp.fr/",
+        "image": {
+          "@type": "ImageObject",
+          "url": "https://gaudesp.fr/assets/img/profile-thumbnail.jpg",
+          "width": 400,
+          "height": 400
+        },
+        "description": "Je suis Gauthier Desplanque, développeur confirmé spécialisé dans la création de tous types d'applications, basé près de Béthune dans le Pas-de-Calais",
+        "sameAs": [
+          "https://github.com/gaudesp",
+          "https://www.linkedin.com/in/gaudesp/"
+        ],
+        "jobTitle": "Développeur Confirmé",
+        "address": {
+          "@type": "PostalAddress",
+          "addressLocality": "Cauchy-à-la-Tour",
+          "addressCountry": "FR"
+        }
       }
-    }
+    ]
+  }
   </script>
   <script src="https://www.google.com/recaptcha/api.js" async defer></script>
   <script src="/assets/js/navigator.js" defer></script>
