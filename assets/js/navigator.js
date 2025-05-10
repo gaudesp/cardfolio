@@ -115,6 +115,20 @@ class BaseNavigator {
       sec.style.display = active ? '' : 'none';
     });
     if (this.wrapper) this.wrapper.scrollTop = 0;
+    this._unloadIframe(tab);
+  }
+
+  /**
+   * Unload iframe
+   */
+  _unloadIframe(tab) {
+    const iframe = document.querySelector('#error iframe');
+    if (!iframe) return;
+
+    if (iframe.src && tab !== 'error') {
+      iframe.dataset.src = iframe.src;
+      iframe.src = '';
+    }
   }
 
   _prepareWrapper() {}
@@ -172,6 +186,19 @@ class BaseNavigator {
  * Desktop-specific behavior: transitions between sections
  */
 class DesktopNavigator extends BaseNavigator {
+  /**
+   * Override start on Desktop
+   */
+  _start() {
+    if (!document.getElementById(this.currentTab)) {
+      this.currentTab = 'error';
+      history.replaceState(null, '', `#${this.currentTab}`);
+      this.navItems.forEach(item => item.classList.remove('active'));
+    }
+    this._updateNav(this.currentTab);
+    this._updateSection(this.currentTab);
+  }
+
   /**
    * Initialize wrapper animation for desktop
    */
