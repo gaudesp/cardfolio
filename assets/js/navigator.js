@@ -185,6 +185,7 @@ class DesktopNavigator extends BaseNavigator {
       this.wrapper.addEventListener('transitionend', () => {
         this.wrapper.classList.remove('slide-in');
       }, { once: true });
+      this._fadeInSection(this.currentTab);
       this.isAnimating = false;
     }, 100);
   }
@@ -207,6 +208,7 @@ class DesktopNavigator extends BaseNavigator {
     this.wrapper.addEventListener('transitionend', () => {
       super._updateSection(tab);
       this._enter();
+      this._fadeInSection(tab);
     }, { once: true });
 
     this._exit();
@@ -233,6 +235,20 @@ class DesktopNavigator extends BaseNavigator {
       this.wrapper.classList.remove('slide-in');
       this.isAnimating = false;
     }, { once: true });
+  }
+
+  /**
+   * Animate section children with fade-in effect
+   */
+  _fadeInSection(tab) {
+    const sec = document.getElementById(tab);
+    if (!sec) return;
+    sec.removeAttribute('data-fading');
+    Array.from(sec.children).forEach((el, i) => {
+      el.style.setProperty('--fade-delay', `${i * 50}ms`);
+    });
+    void sec.offsetWidth;
+    sec.setAttribute('data-fading', '');
   }
 }
 

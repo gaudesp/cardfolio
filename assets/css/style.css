@@ -784,6 +784,18 @@ h4 {
 
 /* Media Queries */
 @media (min-width: 1101px) {
+  article section > * {
+    opacity: 0;
+    transform: translateY(10px);
+    animation-fill-mode: forwards;
+    animation-duration: 0.6s;
+    animation-timing-function: ease;
+    animation-delay: var(--fade-delay, 0ms);
+    animation-name: none;
+  }
+  article section[data-fading] > * {
+    animation-name: fadeInUp;
+  }
   .content {
     flex-direction: row;
     position: relative;
