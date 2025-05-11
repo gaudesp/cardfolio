@@ -1,11 +1,11 @@
-const FORMSPREE_SELECTORS = {
+export const FORMSPREE_SELECTORS = {
   form:       '#contactForm', // Contact form element
   submitBtn:  '#submitBtn',   // Submit button element
   messageBox: '#formMessage', // Container for flash messages
 };
 
 // Build Formspree endpoint from form_id
-const FORMSPREE_ENDPOINT = `https://formspree.io/f/${document
+export const FORMSPREE_ENDPOINT = `https://formspree.io/f/${document
   .querySelector(FORMSPREE_SELECTORS.form)
   .querySelector('[name="form_id"]')
   .value}`;
@@ -13,7 +13,7 @@ const FORMSPREE_ENDPOINT = `https://formspree.io/f/${document
 /**
  * Handles form submission and messaging via Formspree
  */
-class FormspreeHandler {
+export class FormspreeHandler {
   constructor() {
     this.form = document.querySelector(FORMSPREE_SELECTORS.form);
     this.submitBtn = document.querySelector(FORMSPREE_SELECTORS.submitBtn);
@@ -133,10 +133,3 @@ class FormspreeHandler {
     return 'Indisponible, contactez-moi par email';
   }
 }
-
-/**
- * Initialization
- */
-window.addEventListener('DOMContentLoaded', () => {
-  new FormspreeHandler();
-});

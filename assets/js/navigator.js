@@ -1,18 +1,18 @@
-const NAVIGATOR_SELECTORS = {
+export const NAVIGATOR_SELECTORS = {
   navItems:     'nav ul li[data-tab]', // Navigation items
   sections:     'article section',     // Content sections to toggle
   wrapper:      'article',             // Wrapper for content sections
   scrollTopBtn: '#scrollTopBtn',       // "Back to top" button
 };
 
-const NAVIGATOR_BREAKPOINT = 1100;               // Width threshold for switching to desktop mode
-const NAVIGATOR_SHOW_SCROLL_AFTER = 100;         // Scroll offset after which scroll-top appears
-const NAVIGATOR_SCROLL_THROTTLE_MS = 50;         // Minimum delay between scroll events
+export const NAVIGATOR_BREAKPOINT = 1100;               // Width threshold for switching to desktop mode
+export const NAVIGATOR_SHOW_SCROLL_AFTER = 100;         // Scroll offset after which scroll-top appears
+export const NAVIGATOR_SCROLL_THROTTLE_MS = 50;         // Minimum delay between scroll events
 
 /**
  * Utility: throttle function execution
  */
-function throttle(fn, wait) {
+export function throttle(fn, wait) {
   let last = 0;
   return function (...args) {
     const now = Date.now();
@@ -26,7 +26,7 @@ function throttle(fn, wait) {
 /**
  * Base class for shared navigation behavior (desktop/tablet/mobile)
  */
-class BaseNavigator {
+export class BaseNavigator {
   constructor(breakpoint) {
     this.breakpoint = breakpoint;
     this.navItems   = [...document.querySelectorAll(NAVIGATOR_SELECTORS.navItems)];
@@ -185,7 +185,7 @@ class BaseNavigator {
 /**
  * Desktop-specific behavior: transitions between sections
  */
-class DesktopNavigator extends BaseNavigator {
+export class DesktopNavigator extends BaseNavigator {
   /**
    * Override start on Desktop
    */
@@ -282,7 +282,7 @@ class DesktopNavigator extends BaseNavigator {
 /**
  * Mobile-specific behavior: smooth scroll + scroll spy
  */
-class MobileNavigator extends BaseNavigator {
+export class MobileNavigator extends BaseNavigator {
   /**
    * Initialize manual scroll tracking for mobile
    */
@@ -356,12 +356,3 @@ class MobileNavigator extends BaseNavigator {
     setTimeout(() => this.isManualScroll = false, 500);
   }
 }
-
-/**
- * Initialization
- */
-let navigatorInstance = null;
-window.addEventListener('DOMContentLoaded', () => {
-  const isDesktop = window.innerWidth > NAVIGATOR_BREAKPOINT;
-  navigatorInstance = new (isDesktop ? DesktopNavigator : MobileNavigator)(NAVIGATOR_BREAKPOINT);
-});

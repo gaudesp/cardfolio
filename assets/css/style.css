@@ -26,6 +26,27 @@
   --article-width: 68%;
 }
 
+/* Loader */
+#appLoader {
+  position: fixed;
+  inset: 0;
+  background: var(--color-white);
+  color: var(--color-primary);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  font-family: sans-serif;
+  font-size: 1.5rem;
+  z-index: 9999;
+  transition: opacity 0.4s ease;
+}
+#appLoader i {
+  font-size: 4rem;
+  margin-bottom: 1rem;
+  animation: spin 2s linear infinite;
+}
+
 /* Background*/
 .background.gradient {
   position: fixed;
