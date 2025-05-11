@@ -1,17 +1,15 @@
+// Refactored navigator.js
 export const NAVIGATOR_SELECTORS = {
-  navItems:     'nav ul li[data-tab]', // Navigation items
-  sections:     'article section',     // Content sections to toggle
-  wrapper:      'article',             // Wrapper for content sections
-  scrollTopBtn: '#scrollTopBtn',       // "Back to top" button
+  navItems:     'nav ul li[data-tab]',
+  sections:     'article section',
+  wrapper:      'article',
+  scrollTopBtn: '#scrollTopBtn',
 };
 
-export const NAVIGATOR_BREAKPOINT = 1100;               // Width threshold for switching to desktop mode
-export const NAVIGATOR_SHOW_SCROLL_AFTER = 100;         // Scroll offset after which scroll-top appears
-export const NAVIGATOR_SCROLL_THROTTLE_MS = 50;         // Minimum delay between scroll events
+export const NAVIGATOR_BREAKPOINT      = 1100;
+export const NAVIGATOR_SHOW_SCROLL_AFTER = 100;
+export const NAVIGATOR_SCROLL_THROTTLE_MS = 50;
 
-/**
- * Utility: throttle function execution
- */
 export function throttle(fn, wait) {
   let last = 0;
   return function (...args) {
@@ -23,33 +21,56 @@ export function throttle(fn, wait) {
   };
 }
 
-/**
- * Base class for shared navigation behavior (desktop/tablet/mobile)
- */
 export class BaseNavigator {
-  constructor(breakpoint) {
-    this.breakpoint = breakpoint;
-    this.navItems   = [...document.querySelectorAll(NAVIGATOR_SELECTORS.navItems)];
-    this.sections   = [...document.querySelectorAll(NAVIGATOR_SELECTORS.sections)];
-    this.wrapper    = document.querySelector(NAVIGATOR_SELECTORS.wrapper);
-    this.scrollTopBtn = document.querySelector(NAVIGATOR_SELECTORS.scrollTopBtn);
-    this.navEl      = document.querySelector('nav');
-    this.navHeight  = this.navEl?.offsetHeight || 0;
-    this.currentTab = this._initialTab();
-    this.prevZone   = window.innerWidth > NAVIGATOR_BREAKPOINT ? 'desktop' : (window.innerWidth > 655 ? 'tablet' : 'mobile');
+  constructor(breakpoint = NAVIGATOR_BREAKPOINT, startTab = null) {
+    this.breakpoint       = breakpoint;
+    this.navItems         = Array.from(document.querySelectorAll(NAVIGATOR_SELECTORS.navItems));
+    this.sections         = Array.from(document.querySelectorAll(NAVIGATOR_SELECTORS.sections));
+    this.wrapper          = document.querySelector(NAVIGATOR_SELECTORS.wrapper);
+    this.scrollTopBtn     = document.querySelector(NAVIGATOR_SELECTORS.scrollTopBtn);
+    this.navEl            = document.querySelector('nav');
+    this.currentTab       = startTab || this._initialTab();
+    this.prevZone         = this._getZone();
+    this.isManualScroll   = false;
+    this.scrollSpyEnabled = true;
 
     this._bindCommon();
     this._prepareWrapper();
     this._start();
   }
 
-  /**
-   * Cleanup event listeners before switching mode
-   */
+  _getZone() {
+    const w = window.innerWidth;
+    if (w > this.breakpoint) return 'desktop';
+    if (w > 655) return 'tablet';
+    return 'mobile';
+  }
+
+  _initialTab() {
+    const hash = window.location.hash.slice(1);
+    return hash || this.navItems[0]?.dataset.tab;
+  }
+
+  _bindCommon() {
+    this._onNavClickBound   = e => this._onNavClick(e);
+    this._onResizeBound     = () => this._onResize();
+    this._scrollSpyBound    = throttle(() => this._onScrollSpy(), NAVIGATOR_SCROLL_THROTTLE_MS);
+    this._toggleScrollBound = () =>
+      this.scrollTopBtn?.classList.toggle('show', window.pageYOffset > NAVIGATOR_SHOW_SCROLL_AFTER);
+    this._onScrollTopBound  = e => { e.preventDefault(); this._onScrollTopClick(); };
+
+    this.navItems.forEach(item => item.addEventListener('click', this._onNavClickBound));
+    window.addEventListener('resize', this._onResizeBound);
+    window.addEventListener('scroll', this._scrollSpyBound);
+
+    if (this.scrollTopBtn) {
+      window.addEventListener('scroll', this._toggleScrollBound);
+      this.scrollTopBtn.addEventListener('click', this._onScrollTopBound);
+    }
+  }
+
   destroy() {
-    this.navItems.forEach(item =>
-      item.removeEventListener('click', this._onNavClickBound)
-    );
+    this.navItems.forEach(item => item.removeEventListener('click', this._onNavClickBound));
     window.removeEventListener('resize', this._onResizeBound);
     window.removeEventListener('scroll', this._scrollSpyBound);
     if (this.scrollTopBtn) {
@@ -58,168 +79,123 @@ export class BaseNavigator {
     }
   }
 
-  /**
-   * Get initial active tab from hash or default to the first item
-   */
-  _initialTab() {
-    const hash = window.location.hash.slice(1);
-    return hash || this.navItems[0]?.dataset.tab;
-  }
-
-  /**
-   * Attach common events (click, resize, scroll)
-   */
-  _bindCommon() {
-    this._onNavClickBound = e => this._onNavClick(e);
-    this._onResizeBound   = () => this._onResize();
-    this._scrollSpyBound  = throttle(() => this._onScrollSpy(), NAVIGATOR_SCROLL_THROTTLE_MS);
-    this._toggleScrollBound = () =>
-      this.scrollTopBtn?.classList.toggle('show', window.pageYOffset > NAVIGATOR_SHOW_SCROLL_AFTER);
-    this._onScrollTopBound = e => { e.preventDefault(); this._onScrollTopClick(); };
-
-    this.navItems.forEach(item =>
-      item.addEventListener('click', this._onNavClickBound)
-    );
-    window.addEventListener('resize', this._onResizeBound);
-    window.addEventListener('scroll', this._scrollSpyBound);
-    if (this.scrollTopBtn) {
-      window.addEventListener('scroll', this._toggleScrollBound);
-      this.scrollTopBtn.addEventListener('click', this._onScrollTopBound);
-    }
-  }
-
-  /**
-   * Activate current tab and section on load
-   */
   _start() {
     this._updateNav(this.currentTab);
     this._updateSection(this.currentTab);
   }
 
-  /**
-   * Update visual state of navigation
-   */
   _updateNav(tab) {
     this.navItems.forEach(item =>
       item.classList.toggle('active', item.dataset.tab === tab)
     );
   }
 
-  /**
-   * Show selected section and hide others
-   */
   _updateSection(tab) {
     this.sections.forEach(sec => {
-      const active = sec.id === tab;
-      sec.classList.toggle('active', active);
-      sec.style.display = active ? '' : 'none';
+      const isActive = sec.id === tab;
+      sec.classList.toggle('active', isActive);
+      sec.style.display = isActive ? '' : 'none';
     });
     if (this.wrapper) this.wrapper.scrollTop = 0;
     this._unloadIframe(tab);
   }
 
-  /**
-   * Unload iframe
-   */
   _unloadIframe(tab) {
     const iframe = document.querySelector('#error iframe');
     if (!iframe) return;
-
     if (iframe.src && tab !== 'error') {
       iframe.dataset.src = iframe.src;
       iframe.src = '';
     }
   }
 
+  _onResize() {
+    const newZone = this._getZone();
+    if (newZone === this.prevZone) return;
+
+    // disable scrollSpy during resize
+    this.scrollSpyEnabled = false;
+
+    if (newZone === 'desktop' || this.prevZone === 'desktop') {
+      this._switchMode(
+        newZone === 'desktop' ? DesktopNavigator : MobileNavigator,
+        this.currentTab
+      );
+    } else {
+      this._updateNav(this.currentTab);
+      this._updateSection(this.currentTab);
+      if (this instanceof MobileNavigator) {
+        this.isManualScroll = true;
+        this._scrollTo(this.currentTab);
+      }
+    }
+
+    this.prevZone = newZone;
+
+    // re-enable scrollSpy after forced scroll
+    setTimeout(() => {
+      this.isManualScroll = false;
+      this.scrollSpyEnabled = true;
+    }, 600);
+  }
+
+  _switchMode(NavClass, startTab) {
+    this.destroy();
+    const instance = new NavClass(this.breakpoint, startTab);
+    window.navigatorInstance = instance;
+
+    if (instance instanceof MobileNavigator) {
+      instance.isManualScroll = true;
+      instance._scrollTo(instance.currentTab);
+    }
+  }
+
   _prepareWrapper() {}
   _onNavClick(evt) {}
 
-  /**
-   * Handle responsive layout switching on resize
-   */
-  _onResize() {
-    const w = window.innerWidth;
-    const isDesktop = w > this.breakpoint;
-    const isTablet  = w <= this.breakpoint && w > 655;
-    const isMobile  = w <= 655;
-
-    if ((this.prevZone === 'desktop') !== isDesktop) {
-      this._switchMode(isDesktop ? DesktopNavigator : MobileNavigator, !isDesktop);
-      this.prevZone = isDesktop ? 'desktop' : 'mobile';
-      return;
+  _onScrollSpy() {
+    if (!this.scrollSpyEnabled || this.isManualScroll) return;
+    this.navHeight = this.navEl?.offsetHeight || 0;
+    let active = null;
+    for (const sec of this.sections) {
+      const { top, bottom } = sec.getBoundingClientRect();
+      if (top <= this.navHeight && bottom > this.navHeight) {
+        active = sec.id;
+        break;
+      }
     }
-
-    if (this.prevZone === 'tablet' && isMobile) {
-      this._switchMode(MobileNavigator, true);
-      this.prevZone = 'mobile';
-      return;
-    }
-    if (this.prevZone === 'mobile' && isTablet) {
-      this._switchMode(MobileNavigator, true);
-      this.prevZone = 'tablet';
-      return;
+    if (active && active !== this.currentTab) {
+      this._updateNav(active);
+      this._updateSection(active);
+      this.currentTab = active;
+      history.replaceState(null, '', `#${active}`);
     }
   }
 
-  /**
-   * Switch navigation mode (desktop/mobile)
-   */
-  _switchMode(NavClass, scrollToTab) {
-    this.destroy();
-    navigatorInstance = new NavClass(this.breakpoint);
-    if (scrollToTab && navigatorInstance instanceof MobileNavigator) {
-      navigatorInstance.isManualScroll = true;
-      navigatorInstance._scrollTo(this.currentTab);
-      setTimeout(() => {
-        navigatorInstance.isManualScroll = false;
-      }, 500);
-    }
-    navigatorInstance._updateNav(this.currentTab);
-    navigatorInstance._updateSection(this.currentTab);
-  }
-
-  _onScrollSpy() {}
   _onScrollTopClick() {}
 }
 
-/**
- * Desktop-specific behavior: transitions between sections
- */
 export class DesktopNavigator extends BaseNavigator {
-  /**
-   * Override start on Desktop
-   */
   _start() {
     if (!document.getElementById(this.currentTab)) {
       this.currentTab = 'error';
       history.replaceState(null, '', `#${this.currentTab}`);
-      this.navItems.forEach(item => item.classList.remove('active'));
     }
-    this._updateNav(this.currentTab);
-    this._updateSection(this.currentTab);
+    super._updateNav(this.currentTab);
+    super._updateSection(this.currentTab);
   }
 
-  /**
-   * Initialize wrapper animation for desktop
-   */
   _prepareWrapper() {
     document.body.classList.add('js-ready');
     this.wrapper.classList.add('initial-hide');
-
     setTimeout(() => {
-      this.wrapper.classList.remove('initial-hide');
-      this.wrapper.classList.add('slide-in');
-      this.wrapper.addEventListener('transitionend', () => {
-        this.wrapper.classList.remove('slide-in');
-      }, { once: true });
+      this.wrapper.classList.replace('initial-hide', 'slide-in');
+      this.wrapper.addEventListener('transitionend', () => this.wrapper.classList.remove('slide-in'), { once: true });
       this._fadeInSection(this.currentTab);
       this.isAnimating = false;
     }, 100);
   }
 
-  /**
-   * Handle click on navigation item
-   */
   _onNavClick(evt) {
     evt.preventDefault();
     const tab = evt.currentTarget.dataset.tab;
@@ -227,9 +203,6 @@ export class DesktopNavigator extends BaseNavigator {
     this._activateTab(tab);
   }
 
-  /**
-   * Activate a new tab with transition
-   */
   _activateTab(tab) {
     this.isAnimating = true;
     this.wrapper.addEventListener('transitionend', () => {
@@ -237,7 +210,6 @@ export class DesktopNavigator extends BaseNavigator {
       this._enter();
       this._fadeInSection(tab);
     }, { once: true });
-
     this._exit();
     super._updateNav(tab);
     history.replaceState(null, '', `#${tab}`);
@@ -245,17 +217,11 @@ export class DesktopNavigator extends BaseNavigator {
     this.currentTab = tab;
   }
 
-  /**
-   * Start exit animation
-   */
   _exit() {
     void this.wrapper.offsetWidth;
     this.wrapper.classList.add('slide-out');
   }
 
-  /**
-   * Start enter animation after transition
-   */
   _enter() {
     this.wrapper.classList.replace('slide-out', 'slide-in');
     this.wrapper.addEventListener('transitionend', () => {
@@ -264,39 +230,28 @@ export class DesktopNavigator extends BaseNavigator {
     }, { once: true });
   }
 
-  /**
-   * Animate section children with fade-in effect
-   */
   _fadeInSection(tab) {
     const sec = document.getElementById(tab);
     if (!sec) return;
     sec.removeAttribute('data-fading');
-    Array.from(sec.children).forEach((el, i) => {
-      el.style.setProperty('--fade-delay', `${i * 50}ms`);
-    });
+    sec.childNodes.forEach((el, i) => el.style?.setProperty('--fade-delay', `${i * 50}ms`));
     void sec.offsetWidth;
     sec.setAttribute('data-fading', '');
   }
 }
 
-/**
- * Mobile-specific behavior: smooth scroll + scroll spy
- */
 export class MobileNavigator extends BaseNavigator {
-  /**
-   * Initialize manual scroll tracking for mobile
-   */
   _prepareWrapper() {
     document.body.classList.add('js-ready');
-    ['wheel','touchstart'].forEach(evt =>
-      window.addEventListener(evt, () => this.isManualScroll = false, { passive: true })
-    );
-    this.isManualScroll = false;
+
+    if (this.currentTab && !this.isManualScroll && window.location.hash) {
+      this.isManualScroll = true;
+      this._activateTab(this.currentTab)
+    }
+    
+    ['wheel', 'touchstart'].forEach(evt => window.addEventListener(evt, () => this.isManualScroll = false, { passive: true }));
   }
 
-  /**
-   * Handle click on navigation item
-   */
   _onNavClick(evt) {
     evt.preventDefault();
     const tab = evt.currentTarget.dataset.tab;
@@ -305,9 +260,6 @@ export class MobileNavigator extends BaseNavigator {
     else this._activateTab(tab);
   }
 
-  /**
-   * Activate tab and scroll to it
-   */
   _activateTab(tab) {
     super._updateNav(tab);
     this._scrollTo(tab);
@@ -315,44 +267,21 @@ export class MobileNavigator extends BaseNavigator {
     this.currentTab = tab;
   }
 
-  /**
-   * Smooth scroll to section
-   */
   _scrollTo(tab) {
     const el = document.getElementById(tab);
-    if (!el) return;
-    el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' });
   }
 
-  /**
-   * Track scroll position to highlight active tab
-   */
-  _onScrollSpy() {
-    if (this.isManualScroll) return;
-    this.navHeight = this.navEl?.offsetHeight || 0;
-    let active = null;
-    for (const sec of this.sections) {
-      const { top, bottom } = sec.getBoundingClientRect();
-      if (top <= this.navHeight && bottom > this.navHeight) {
-        active = sec.id; break;
-      }
-    }
-    if (active && active !== this.currentTab) {
-      super._updateNav(active);
-      super._updateSection(active);
-      this.currentTab = active;
-    }
-  }
-
-  /**
-   * Handle "scroll to top" button click
-   */
-  _onScrollTopClick() {
-    this.isManualScroll = true;
-    super._updateNav(this.navItems[0].dataset.tab);
-    this.sections.forEach(sec => { sec.classList.remove('active'); sec.style.display='none'; });
-    window.scrollTo({ top: 0, behavior: 'smooth' });
-    history.replaceState(null, '', window.location.pathname);
-    setTimeout(() => this.isManualScroll = false, 500);
-  }
+_onScrollTopClick() {
+  this.isManualScroll = true;
+  const defaultTab = this.navItems[0]?.dataset.tab || this._initialTab();
+  this.currentTab = defaultTab;
+  super._updateNav(defaultTab);
+  super._updateSection(defaultTab);
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+  history.replaceState(null, '', window.location.pathname);
+  setTimeout(() => {
+    this.isManualScroll = false;
+  }, 500);
+}
 }
