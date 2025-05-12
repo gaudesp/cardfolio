@@ -50,16 +50,15 @@ export class FormspreeHandler {
       if (response.ok) {
         this._flash('Votre message a bien été envoyé', 'success');
         this.form.reset();
-        grecaptcha.reset();
+        window.recaptchaManager.reset();
       } else {
         const message = this._parseError(data);
         this._flash(message, 'error');
-        grecaptcha.reset();
       }
     } catch (err) {
       console.error(err);
       this._flash('Indisponible, contactez-moi par email', 'error');
-      grecaptcha.reset();
+      window.recaptchaManager.reset();
     } finally {
       this.submitBtn.disabled = false;
     }

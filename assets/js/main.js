@@ -6,7 +6,13 @@ import {
 
 import { FormspreeHandler } from './formspree.js';
 
+import { ThemeManager } from './theme.js';
+import { RecaptchaManager } from './recaptcha.js';
+
 document.addEventListener('DOMContentLoaded', () => {
+  window.recaptchaManager = new RecaptchaManager();
+  window.themeManager = new ThemeManager('#themeToggleBtn');
+
   const loader  = document.querySelector('#appLoader');
   const content = document.querySelector('#appContent');
   if (loader && content) {
@@ -26,6 +32,7 @@ document.addEventListener('DOMContentLoaded', () => {
         ? DesktopNavigator
         : MobileNavigator)(NAVIGATOR_BREAKPOINT);
 
+      window.recaptchaManager.render();
       window.formspreeHandler = new FormspreeHandler();
     }, 100);
   });

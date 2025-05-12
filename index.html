@@ -78,7 +78,7 @@
   }
   </script>
   <script src="https://www.google.com/recaptcha/api.js" async defer></script>
-  <link rel="stylesheet" href="/assets/css/style.css">
+  <link rel="stylesheet" href="/assets/css/main.css">
   <link rel="stylesheet" href="/libs/fontawesome/css/all.min.css">
 </head>
 <body>
@@ -153,6 +153,7 @@
           </ul>
           <div class="aside-buttons">
             <a href="/assets/file/CV_Gauthier_DESPLANQUE.pdf" target="_blank" class="btn">Télécharger le CV</a>
+            <button class="btn" id="themeToggleBtn" aria-label="Changer le thème">🌙</button>
           </div>
         </div>
       </aside>
@@ -459,7 +460,7 @@
                     <span><i class="fa-solid fa-message"></i> Message</span>
                     <textarea value="test" name="message" rows="10" maxlength="5000" placeholder="Votre message..." required></textarea>
                   </label>
-                  <div class="g-recaptcha" data-sitekey="6LfwTjErAAAAAE5A2dyaERVEbdIDVvCeBgLvtCfx"></div>
+                  <div id="captcha-wrapper"></div>
                   <button type="submit" class="btn" id="submitBtn">Envoyer</button>
                 </form>
               </div>

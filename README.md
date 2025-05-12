@@ -25,9 +25,12 @@ npx http-server -p 8080
 
 ## 📦 Dépendances
 - `Font Awesome` : Bibliothèque d’icônes pour embellir les cartes et les boutons.
-- `navigator.js` : Gestionnaire de navigation entre les sections avec animations (desktop) et scroll (mobile).
-- `formspree.js` : Gestionnaire du formulaire de contact avec envoi via Formspree, messages flash et validation reCAPTCHA.
-- `style.css` : Feuille de style personnalisée pour le design responsive et moderne.
+- `navigator.js` : Navigation entre les sections avec animations (desktop) et scroll (mobile).
+- `formspree.js` : Gestion du formulaire de contact avec envoi via Formspree.
+- `recaptcha.js` : Intégration dédiée de reCAPTCHA v2.
+- `theme.js` : Thème clair/sombre avec persistance locale.
+- `main.js` : Script principal d’initialisation (écouteurs, états, etc.).
+- `main.css` : Style personnalisé pour un design responsive et moderne.
 - `HTML5` & `CSS3` : Technologies de base pour la structure et le style.
 - `JavaScript (ES6+)` : Pour les interactions dynamiques.
 
