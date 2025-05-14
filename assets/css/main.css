@@ -294,6 +294,9 @@ aside {
   border-radius: var(--radius);
   background: var(--color-white);
   text-align: center;
+  overflow-y: scroll;
+  scrollbar-width: none;
+  -ms-overflow-style: none; 
   box-shadow: -15px -15px 0px 1px rgba(var(--color-primary-rgb), 0.5),
     0px 0px 15px 0px rgba(var(--color-text-rgb), 0.5);
   -webkit-box-shadow: -15px -15px 0px 1px rgba(var(--color-primary-rgb), 0.5),
@@ -319,6 +322,16 @@ aside .info {
   padding-top: 1.5rem;
   padding-bottom: 1.5rem;
 }
+aside header {
+  gap: 0;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  align-items: center;
+}
+aside::-webkit-scrollbar {
+  display: none;
+}
 aside .aside-buttons {
   display: flex;
   flex-direction: row;
@@ -327,13 +340,13 @@ aside .aside-buttons {
   margin-top: 0.5rem;
 }
 aside .info h3 {
-  margin-top: -0.5rem; 
   color: var(--color-primary);
   position: relative;
   border-right: 2px solid rgba(var(--color-secondary-rgb),.75);
   text-align: center;
   white-space: nowrap;
   overflow: hidden;
+  flex-shrink: 0;
   animation: 
     typewriter 1s steps(50) 1s 1 normal both, 
     blinkingCursor 500ms steps(50) infinite normal,
@@ -469,7 +482,7 @@ article section:focus {
     var(--color-white)
   ) 1;
 }
-header {
+article header {
   padding: 20px 25px;
   border-bottom: 1px solid transparent;
   border-image: linear-gradient(
@@ -478,7 +491,7 @@ header {
     var(--color-white)
   ) 1;
 }
-header:empty {
+article header:empty {
   padding: 0;
 }
 
@@ -1122,6 +1135,10 @@ h4 {
     margin: 64px 0 0;
     border-radius: unset;
   }
+  aside .info {
+    padding-bottom: 0;
+    margin-bottom: 2rem;
+  }
   aside .profile-pic {
     border-radius: unset;
   }
@@ -1150,6 +1167,9 @@ h4 {
   }
 }
 @media (max-width: 560px) {
+  aside .profile-pic {
+    height: 375px;
+  }
   .col-sm-6 {
     flex: 0 0 100%;
     max-width: 100%;

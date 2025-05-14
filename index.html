@@ -28,7 +28,12 @@
   <link rel="apple-touch-icon" sizes="180x180" href="/assets/img/favicons/apple-touch-icon.png">
   <link rel="manifest" href="/site.webmanifest">
   <meta name="theme-color" content="#ffffff">
-
+  <script>
+  const theme = localStorage.getItem('preferred-theme');
+  if (theme === 'dark' || (!theme && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+    document.documentElement.classList.add('dark');
+  }
+  </script>
   <script type="application/ld+json">
   {
     "@context": "https://schema.org",
@@ -134,8 +139,10 @@
           class="sr-only">
         </div>
         <div class="info">
-          <h1>Gauthier Desplanque</h1>
-          <h3>Développeur Confirmé</h3>
+          <header>
+            <h1>Gauthier Desplanque</h1>
+            <h3>Développeur Confirmé</h3>
+          </header>
           <ul class="social-icons">
             <li>
               <a href="https://github.com/gaudesp" target="_blank">

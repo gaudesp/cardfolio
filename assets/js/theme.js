@@ -17,7 +17,13 @@ export class ThemeManager {
   _applyInitialTheme() {
     const storedTheme = localStorage.getItem(THEME_KEY);
     const systemPrefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
-    const theme = storedTheme ? storedTheme : (systemPrefersDark ? 'dark' : 'light'); this._setTheme(theme);
+    const theme = storedTheme ? storedTheme : (systemPrefersDark ? 'dark' : 'light');
+    const alreadyApplied = this.root.classList.contains(THEME_CLASS_DARK);
+    if ((theme === 'dark' && alreadyApplied) || (theme === 'light' && !alreadyApplied)) {
+      this._updateToggleLabel(theme);
+      return;
+    }
+    this._setTheme(theme);
   }
 
   // Attach du listener sur le bouton de bascule
