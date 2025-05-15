@@ -1,9 +1,5 @@
 // Gestion du thème clair/sombre : stockage en localStorage,
 // bascule avec un bouton et render du reCAPTCHA.
-
-const THEME_KEY = 'preferred-theme';
-const THEME_CLASS_DARK = 'dark';
-
 export class ThemeManager {
   constructor(toggleBtnSelector) {
     this.toggleBtn = document.querySelector(toggleBtnSelector);
@@ -15,15 +11,10 @@ export class ThemeManager {
 
   // Applique le thème initial (stocké ou préférence système)
   _applyInitialTheme() {
-    const storedTheme = localStorage.getItem(THEME_KEY);
-    const systemPrefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
-    const theme = storedTheme ? storedTheme : (systemPrefersDark ? 'dark' : 'light');
-    const alreadyApplied = this.root.classList.contains(THEME_CLASS_DARK);
-    if ((theme === 'dark' && alreadyApplied) || (theme === 'light' && !alreadyApplied)) {
-      this._updateToggleLabel(theme);
-      return;
-    }
-    this._setTheme(theme);
+    const stored = localStorage.getItem('preferred-theme');
+    const systemDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+    const theme = stored || (systemDark ? 'dark' : 'light');
+    this._setTheme(theme, false);
   }
 
   // Attach du listener sur le bouton de bascule
@@ -32,42 +23,29 @@ export class ThemeManager {
     this.toggleBtn.addEventListener('click', () => this._toggleTheme());
   }
 
-  /**
-   * Bascule entre les thèmes clair et sombre.
-   */
+  // Bascule entre les thèmes clair et sombre
   _toggleTheme() {
-    const isDark = this.root.classList.contains(THEME_CLASS_DARK);
-    this._setTheme(isDark ? 'light' : 'dark');
+    const next = this.root.classList.contains('dark') ? 'light' : 'dark';
+    this._setTheme(next);
   }
 
-  // Applique le thème et met à jour le label du bouton
-  _setTheme(theme) {
-    if (theme === 'dark') {
-      this.root.classList.add(THEME_CLASS_DARK);
-      localStorage.setItem(THEME_KEY, 'dark');
-      this._updateToggleLabel('dark');
-    } else {
-      this.root.classList.remove(THEME_CLASS_DARK);
-      localStorage.setItem(THEME_KEY, 'light');
-      this._updateToggleLabel('light');
-    }
-    // Re-rendu du reCAPTCHA pour respecter le thème
-    if (window.recaptchaManager) {
-      window.recaptchaManager.render();
-    }
+  // Applique le thème + label + recaptcha
+  _setTheme(theme, save = true) {
+    const dark = theme === 'dark';
+    this.root.classList.toggle('dark', dark);
+    if (save) localStorage.setItem('preferred-theme', theme);
+    this._updateToggleLabel(theme);
+    if (window.recaptchaManager) window.recaptchaManager.render();
   }
 
-  // Met à jour l’icône et l’aria-label du bouton selon le thème
+  // Met à jour l'icône et l'aria-label du bouton
   _updateToggleLabel(theme) {
-    if (this.toggleBtn) {
-      this.toggleBtn.setAttribute(
-        'aria-label',
-        theme === 'dark'
-          ? 'Activer le thème clair'
-          : 'Activer le thème sombre'
-      );
-      this.toggleBtn.textContent =
-        theme === 'dark' ? '☀️' : '🌙';
-    }
+    const label = theme === 'dark' ? '☀️' : '🌙';
+    if (!this.toggleBtn) return;
+    this.toggleBtn.textContent = label;
+    this.toggleBtn.setAttribute(
+      'aria-label',
+      theme === 'dark' ? 'Activer le thème clair' : 'Activer le thème sombre'
+    );
   }
 }

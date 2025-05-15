@@ -283,6 +283,14 @@ export class MobileNavigator extends BaseNavigator {
     ['wheel', 'touchstart'].forEach(evt => window.addEventListener(evt, () => this.isManualScroll = false, { passive: true }));
   }
 
+  // Afficher toutes les sections par défaut sur mobile
+  _updateSection(tab) {
+    this.sections.forEach(sec => {
+      sec.classList.remove('active');
+      sec.style.display = '';
+    });
+  }
+
   // Gère le clic sur un onglet en scrollant ou en activant
   _onNavClick(evt) {
     evt.preventDefault();
@@ -312,7 +320,6 @@ export class MobileNavigator extends BaseNavigator {
     const defaultTab = this.navItems[0]?.dataset.tab || this._initialTab();
     this.currentTab = defaultTab;
     super._updateNav(defaultTab);
-    super._updateSection(defaultTab);
     window.scrollTo({ top: 0, behavior: 'smooth' });
     history.replaceState(null, '', window.location.pathname);
     setTimeout(() => {

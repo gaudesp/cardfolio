@@ -939,6 +939,12 @@ h4 {
   }
 }
 @media (max-width: 1100px) {
+  :root.dark .background.gradient {
+    background: #1f1f24;
+  }
+  :root.dark body {
+    background-color: #1f1f24;
+  }
   ul.social-icons {
     margin: 10px 0;
   }
@@ -1097,6 +1103,12 @@ h4 {
   }
 }
 @media (max-width: 655px) {
+  :root.dark .background.gradient {
+    background: var(--color-white);
+  }
+  :root.dark body {
+    background-color: var(--color-white);
+  }
   .form-message {
     width: 60%;
     line-height: 1rem;
