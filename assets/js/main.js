@@ -8,6 +8,7 @@ import { FormspreeHandler } from './formspree.js';
 
 import { ThemeManager } from './theme.js';
 import { RecaptchaManager } from './recaptcha.js';
+import { TypewriterRotator } from './typewriter.js';
 
 document.addEventListener('DOMContentLoaded', () => {
   window.recaptchaManager = new RecaptchaManager();
@@ -26,6 +27,20 @@ document.addEventListener('DOMContentLoaded', () => {
         loader.style.display  = 'none';
         content.style.display = '';
       }
+
+      window.typewriterRotator = new TypewriterRotator('#typewriter-text', [
+        'Développeur Ruby on Rails',
+        'Développeur Node.js',
+        'Développeur Python',
+        'Développeur PHP',
+        'Développeur JavaScript',
+        'Développeur TypeScript',
+        'Développeur HTML/CSS'
+      ], {
+        speed: 50,
+        pause: 4000,
+        initialDelay: 500
+      });
 
       const isDesktop = window.innerWidth > NAVIGATOR_BREAKPOINT;
       window.navigatorInstance = new (isDesktop
