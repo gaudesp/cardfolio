@@ -828,6 +828,9 @@ h4 {
   border-radius: var(--radius);
   font-family: var(--font-family);
 }
+.contact-form textarea {
+  min-height: 15em;
+}
 .contact-form input:focus,
 .contact-form textarea:focus {
   border: 1px solid var(--color-primary);
@@ -1106,11 +1109,10 @@ h4 {
   }
   article section {
     margin-bottom: 0;
-    border-radius: 0;
     background: var(--color-white);
   }
-  article > section:last-of-type {
-    border-radius: var(--radius);
+  article section:last-child {
+    border-radius: 0 0 var(--radius) var(--radius);
   }
   html,
   body {
