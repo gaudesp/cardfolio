@@ -96,14 +96,13 @@ export class BaseNavigator {
 
   // Démarrage : active la nav et la section initiales
   _start() {
-    this._updateNav(this.currentTab);
     this._updateSection(this.currentTab);
   }
 
   // Met à jour la classe active sur les items de navigation
   _updateNav(tab) {
     this.navItems.forEach(item =>
-      item.classList.toggle('active', item.dataset.tab === tab)
+      item.classList.toggle('active', tab && item.dataset.tab === tab)
     );
   }
 
@@ -181,6 +180,14 @@ export class BaseNavigator {
         break;
       }
     }
+
+    if (this._getZone() !== 'desktop' && !active) {
+      this._updateNav(null);
+      this.currentTab = null;
+      history.replaceState(null, '', window.location.pathname);
+      return;
+    }
+
     if (active && active !== this.currentTab) {
       this._updateNav(active);
       this._updateSection(active);
@@ -280,7 +287,10 @@ export class MobileNavigator extends BaseNavigator {
       this.isManualScroll = true;
       this._activateTab(this.currentTab);
     }
-    ['wheel', 'touchstart'].forEach(evt => window.addEventListener(evt, () => this.isManualScroll = false, { passive: true }));
+
+    ['wheel', 'touchstart'].forEach(evt =>
+      window.addEventListener(evt, () => this.isManualScroll = false, { passive: true })
+    );
   }
 
   // Afficher toutes les sections par défaut sur mobile
@@ -296,8 +306,7 @@ export class MobileNavigator extends BaseNavigator {
     evt.preventDefault();
     const tab = evt.currentTarget.dataset.tab;
     this.isManualScroll = true;
-    if (tab === this.currentTab) this._scrollTo(tab);
-    else this._activateTab(tab);
+    this._activateTab(tab);
   }
 
   // Active un onglet (maj nav + scroll vers la section)
@@ -319,7 +328,7 @@ export class MobileNavigator extends BaseNavigator {
     this.isManualScroll = true;
     const defaultTab = this.navItems[0]?.dataset.tab || this._initialTab();
     this.currentTab = defaultTab;
-    super._updateNav(defaultTab);
+    super._updateNav(null);
     window.scrollTo({ top: 0, behavior: 'smooth' });
     history.replaceState(null, '', window.location.pathname);
     setTimeout(() => {
