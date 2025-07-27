@@ -40,7 +40,7 @@ export class ThemeManager {
 
   // Met à jour l'icône et l'aria-label du bouton
   _updateToggleLabel(theme) {
-    const label = theme === 'dark' ? '☀️' : '🌙';
+    const label = theme === 'dark' ? '☀ Allumer' : '☾ Eteindre';
     if (!this.toggleBtn) return;
     this.toggleBtn.textContent = label;
     this.toggleBtn.setAttribute(
