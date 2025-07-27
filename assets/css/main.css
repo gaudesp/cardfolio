@@ -1020,13 +1020,13 @@ h4 {
   }
   .scroll-top-btn {
     position: fixed;
-    bottom: 1rem;
-    right: 1rem;
+    bottom: 1.25rem;
+    right: 1.25rem;
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    width: 2.75rem;
-    height: 2.75rem;
+    width: 3rem;
+    height: 3rem;
     background: var(--color-secondary);
     color: var(--color-white);
     border: none;
@@ -1037,8 +1037,11 @@ h4 {
     z-index: 100;
   }
   .scroll-top-btn.show {
-    opacity: 1;
+    opacity: 0.75;
     visibility: visible;
+  }
+  .scroll-top-btn.show:focus {
+    background: var(--color-primary);
   }
   .scroll-top-btn:hover {
     transform: translateY(-2px);
